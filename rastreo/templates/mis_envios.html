@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis pedidos</title>
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-500: #9b59b6;
+            --purple-400: #b38cd9;
+            --purple-300: #c9a8e0;
+            --purple-200: #e0d0f0;
+            --purple-100: #f3ebf9;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--purple-50);
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-rastreo {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header-rastreo h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .contenedor-rastreo {
+            max-width: 700px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+        }
+
+        .lista-envios {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .item-envio {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 22px;
+            margin-bottom: 14px;
+        }
+
+        .item-envio a {
+            text-decoration: none;
+            color: var(--purple-900);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .estado-pill {
+            background: var(--purple-100);
+            color: var(--purple-700);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .vacio {
+            text-align: center;
+            color: var(--purple-600);
+            padding: 40px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--purple-700);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-rastreo">
+        <h2>📦 Mis pedidos</h2>
+    </div>
+
+    <div class="contenedor-rastreo">
+        {% if envios %}
+            <ul class="lista-envios">
+                {% for envio in envios %}
+                    <li class="item-envio">
+                        <a href="{% url 'rastreo:detalle' codigo=envio.numero_guia %}">
+                            <span>#{{ envio.numero_guia }} — {{ envio.producto }}</span>
+                            <span class="estado-pill">{{ envio.get_estado_actual_display }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="vacio">Aún no tienes pedidos registrados.</div>
+        {% endif %}
+
+        <a href="{% url 'usuarios:tienda_home' %}">Volver al inicio</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control — Nebula Admin</title>
+    <link rel="stylesheet" href="{% static 'dash.css' %}">
+</head>
+<body>
+
+    <svg style="display: none;">
+        <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>
+        </symbol>
+    </svg>
+
+    <header class="site-header" id="siteHeader">
+        <div class="header-inner">
+            <div class="top-header">
+                <a href="#inicio" class="logo" aria-label="Nebula — ir al inicio">
+                    <span class="logo-mark">
+                        <svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-sparkle"/></svg>
+                    </span>
+                    <span class="logo-word">nebula</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <h1>🛸 Panel de Administración de Nebula</h1>
+        </div>
+
+        {% if messages %}
+            <ul class="messages-list">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        <section class="admin-card">
+            <h2>🔒 Proveedores esperando aprobación</h2>
+
+            {% if proveedores_pendientes %}
+                <ul class="supplier-list">
+                {% for perfil in proveedores_pendientes %}
+                    <li class="supplier-item">
+                        <div class="supplier-info">
+                            <strong>{{ perfil.usuario.username }}</strong>
+                            <span class="supplier-email">({{ perfil.usuario.email }})</span>
+                        </div>
+                        <div class="supplier-actions">
+                            <a href="{% url 'administracion:aprobar_proveedor' perfil_id=perfil.id %}" class="btn btn-approve">
+                                ✔ Aprobar Ingreso
+                            </a>
+                            <a href="{% url 'administracion:rechazar_proveedor' perfil_id=perfil.id %}" class="btn btn-reject"
+                               onclick="return confirm('¿Seguro que quieres rechazar y eliminar esta solicitud? Esta acción no se puede deshacer.');">
+                                ✘ Rechazar
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-message">No hay solicitudes de proveedores pendientes por el momento.</p>
+            {% endif %}
+        </section>
+
+        <nav class="admin-actions">
+            <a href="{% url 'administracion:gestion_diseno' %}" class="btn btn-action">
+                🎨 Cambiar Diseño de Productos y Página
+            </a>
+            <a href="{% url 'usuarios:tienda_home' %}" class="btn btn-secondary">
+                ← Ir a la Tienda Pública
+            </a>
+        </nav>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,351 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Finalizar pedido</title>
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-100: #f3ebf9;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--purple-50);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .header-checkout {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header-checkout h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .header-checkout p {
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .contenedor-checkout {
+            max-width: 650px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+        }
+
+        .alerta-error {
+            background: #fde8e8;
+            color: #c0392b;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 18px;
+            font-weight: 500;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .resumen-mini {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+
+        .resumen-mini h3 {
+            color: var(--purple-900);
+            margin: 0 0 12px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-directa {
+            background: var(--purple-100);
+            color: var(--purple-700);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .resumen-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.9rem;
+            color: var(--purple-700);
+            border-bottom: 1px solid var(--purple-100);
+        }
+
+        .resumen-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            margin-top: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--purple-900);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 26px 24px;
+        }
+
+        .form-card h3 {
+            color: var(--purple-900);
+            margin: 0 0 18px;
+            font-size: 1.2rem;
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--purple-800);
+            margin-bottom: 6px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--purple-100);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--purple-900);
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .campo input:focus,
+        .campo select:focus {
+            border-color: var(--purple-600);
+        }
+
+        .fila-doble {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .metodos-pago {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .opcion-pago {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 2px solid var(--purple-100);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--purple-800);
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .opcion-pago:has(input:checked) {
+            border-color: var(--purple-600);
+            background: var(--purple-50);
+        }
+
+        .opcion-pago input[type="radio"] {
+            accent-color: var(--purple-600);
+        }
+
+        .btn-confirmar {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--gradient-hero);
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: transform 0.2s;
+        }
+
+        .btn-confirmar:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .nota-simulacion {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--purple-600);
+            margin-top: 10px;
+        }
+
+        .volver-wrapper {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .volver {
+            display: inline-block;
+            color: var(--purple-700);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: background 0.2s;
+        }
+
+        .volver:hover {
+            background: var(--purple-100);
+        }
+
+        @media (max-width: 500px) {
+            .fila-doble {
+                grid-template-columns: 1fr;
+            }
+            .metodos-pago {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-checkout">
+        <h2>📦 Finalizar pedido</h2>
+        <p>Completa tus datos de envío para continuar</p>
+    </div>
+
+    <div class="contenedor-checkout">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta-error">⚠️ {{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="resumen-mini">
+            <h3>
+                Resumen del pedido
+                {% if compra_directa %}<span class="badge-directa">Compra directa</span>{% endif %}
+            </h3>
+            {% for item in items %}
+                <div class="resumen-item">
+                    <span>{{ item.cantidad }} x {{ item.producto.nombre }}</span>
+                    <span>${{ item.subtotal }} COP</span>
+                </div>
+            {% endfor %}
+            <div class="resumen-total">
+                <span>Total</span>
+                <span>${{ total }} COP</span>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h3>Datos de envío</h3>
+            <form method="POST" action="{% url 'carrito:confirmar_pago' %}">
+                {% csrf_token %}
+
+                <div class="campo">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Maria Gómez" required>
+                </div>
+
+                <div class="fila-doble">
+                    <div class="campo">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Ej: 3001234567" required>
+                    </div>
+                    <div class="campo">
+                        <label for="correo">Correo electrónico</label>
+                        <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="direccion">Dirección de entrega</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle, número, barrio" required>
+                </div>
+
+                <div class="fila-doble">
+                    <div class="campo">
+                        <label for="departamento">Departamento</label>
+                        <input type="text" id="departamento" name="departamento" placeholder="Ej: Cundinamarca" required>
+                    </div>
+                    <div class="campo">
+                        <label for="ciudad">Ciudad</label>
+                        <input type="text" id="ciudad" name="ciudad" placeholder="Ej: Bogotá" required>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label>Método de pago</label>
+                    <div class="metodos-pago">
+                        <label class="opcion-pago">
+                            <input type="radio" name="metodo_pago" value="nequi" required>
+                            <span>Nequi</span>
+                        </label>
+                        <label class="opcion-pago">
+                            <input type="radio" name="metodo_pago" value="tarjeta">
+                            <span>Tarjeta</span>
+                        </label>
+                        <label class="opcion-pago">
+                            <input type="radio" name="metodo_pago" value="pse">
+                            <span>PSE</span>
+                        </label>
+                        <label class="opcion-pago">
+                            <input type="radio" name="metodo_pago" value="mercadopago">
+                            <span>Mercado Pago</span>
+                        </label>
+                        <label class="opcion-pago">
+                            <input type="radio" name="metodo_pago" value="contraentrega">
+                            <span>Contraentrega</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-confirmar">💳 Confirmar y pagar</button>
+            </form>
+        </div>
+
+        <div class="volver-wrapper">
+            {% if compra_directa %}
+                <a href="{% url 'usuarios:tienda_home' %}" class="volver">← Seguir comprando</a>
+            {% else %}
+                <a href="{% url 'carrito:ver_carrito' %}" class="volver">← Volver al carrito</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

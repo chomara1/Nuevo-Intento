@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Diseño — Nebula Admin</title>
+    <link rel="stylesheet" href="{% static 'dash.css' %}">
+</head>
+<body>
+
+    <header class="site-header" id="siteHeader">
+        <div class="header-inner">
+            <div class="top-header">
+                <a href="{% url 'administracion:dashboard' %}" class="logo" aria-label="Nebula — volver al panel">
+                    <span class="logo-mark">🛸</span>
+                    <span class="logo-word">nebula</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <h1>🎨 Gestión de Diseño — Carrusel de Inicio</h1>
+        </div>
+
+        {% if messages %}
+            <ul class="messages-list">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        <section class="admin-card">
+            <form method="post" class="diseno-form">
+                {% csrf_token %}
+
+                <div class="diseno-slide-block">
+                    <h3>Slide 1</h3>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide1_titulo.id_for_label }}">{{ form.slide1_titulo.label }}</label>
+                        {{ form.slide1_titulo }}
+                    </div>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide1_texto.id_for_label }}">{{ form.slide1_texto.label }}</label>
+                        {{ form.slide1_texto }}
+                    </div>
+                    <div class="diseno-colors">
+                        <div class="diseno-field">
+                            <label for="{{ form.slide1_color_a.id_for_label }}">{{ form.slide1_color_a.label }}</label>
+                            {{ form.slide1_color_a }}
+                        </div>
+                        <div class="diseno-field">
+                            <label for="{{ form.slide1_color_b.id_for_label }}">{{ form.slide1_color_b.label }}</label>
+                            {{ form.slide1_color_b }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diseno-slide-block">
+                    <h3>Slide 2</h3>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide2_titulo.id_for_label }}">{{ form.slide2_titulo.label }}</label>
+                        {{ form.slide2_titulo }}
+                    </div>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide2_texto.id_for_label }}">{{ form.slide2_texto.label }}</label>
+                        {{ form.slide2_texto }}
+                    </div>
+                    <div class="diseno-colors">
+                        <div class="diseno-field">
+                            <label for="{{ form.slide2_color_a.id_for_label }}">{{ form.slide2_color_a.label }}</label>
+                            {{ form.slide2_color_a }}
+                        </div>
+                        <div class="diseno-field">
+                            <label for="{{ form.slide2_color_b.id_for_label }}">{{ form.slide2_color_b.label }}</label>
+                            {{ form.slide2_color_b }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diseno-slide-block">
+                    <h3>Slide 3</h3>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide3_titulo.id_for_label }}">{{ form.slide3_titulo.label }}</label>
+                        {{ form.slide3_titulo }}
+                    </div>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide3_texto.id_for_label }}">{{ form.slide3_texto.label }}</label>
+                        {{ form.slide3_texto }}
+                    </div>
+                    <div class="diseno-colors">
+                        <div class="diseno-field">
+                            <label for="{{ form.slide3_color_a.id_for_label }}">{{ form.slide3_color_a.label }}</label>
+                            {{ form.slide3_color_a }}
+                        </div>
+                        <div class="diseno-field">
+                            <label for="{{ form.slide3_color_b.id_for_label }}">{{ form.slide3_color_b.label }}</label>
+                            {{ form.slide3_color_b }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-approve" style="align-self: flex-start;">💾 Guardar cambios</button>
+            </form>
+        </section>
+
+        <nav class="admin-actions">
+            <a href="{% url 'administracion:dashboard' %}" class="btn btn-secondary">← Volver al Panel</a>
+        </nav>
+    </main>
+
+</body>
+</html>
