@@ -1,0 +1,281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Carrito</title>
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--purple-50);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .header-carrito {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header-carrito h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .header-carrito p {
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .badge-cantidad {
+            display: inline-block;
+            background: white;
+            color: #4a1f6a;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .contenedor-carrito {
+            max-width: 750px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+        }
+
+        .alerta-exito {
+            background: #f3ebf9;
+            color: var(--purple-800);
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 18px;
+            font-weight: 500;
+            border-left: 4px solid var(--purple-600);
+        }
+
+        .tarjeta-item {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 22px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-producto {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nombre-producto {
+            color: var(--purple-900);
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .detalle-producto {
+            color: #9b59b6;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .acciones-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .subtotal {
+            color: var(--purple-700);
+            font-weight: 600;
+            font-size: 1.05rem;
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .btn-quitar {
+            color: #e74c3c;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 2px solid #fde8e8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: 0.2s;
+            background: white;
+        }
+
+        .btn-quitar:hover {
+            background: #fde8e8;
+            border-color: #e74c3c;
+        }
+
+        .vacio {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .vacio-icono {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .vacio h3 {
+            color: var(--purple-900);
+            margin-bottom: 10px;
+        }
+
+        .vacio p {
+            color: var(--purple-600);
+        }
+
+        .resumen {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-top: 24px;
+        }
+
+        .fila-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            color: var(--purple-900);
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .btn-pagar {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--gradient-hero);
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .btn-pagar:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .volver-wrapper {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .volver {
+            display: inline-block;
+            color: var(--purple-700);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: background 0.2s;
+        }
+
+        .volver:hover {
+            background: var(--purple-100);
+        }
+
+        @media (max-width: 640px) {
+            .tarjeta-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            
+            .acciones-item {
+                justify-content: space-between;
+            }
+            
+            .subtotal {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header-carrito">
+        <h2>
+            🛒 Mi Carrito
+            {% if carrito.items.all %}
+                <span class="badge-cantidad">{{ carrito.items.all|length }}</span>
+            {% endif %}
+        </h2>
+        <p>{{ carrito.items.all|length }} producto(s) en tu carrito</p>
+    </div>
+
+    <div class="contenedor-carrito">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta-exito">✅ {{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if carrito.items.all %}
+            {% for item in carrito.items.all %}
+                <div class="tarjeta-item">
+                    <div class="info-producto">
+                        <span class="nombre-producto">{{ item.producto.nombre }}</span>
+                        <span class="detalle-producto">{{ item.cantidad }} x ${{ item.producto.precio }} COP</span>
+                    </div>
+                    <div class="acciones-item">
+                        <span class="subtotal">${{ item.subtotal }} COP</span>
+                        <a href="{% url 'carrito:quitar_item' item_id=item.id %}" class="btn-quitar">✕ Quitar</a>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="resumen">
+                <div class="fila-total">
+                    <span>Total</span>
+                    <span>${{ carrito.total }} COP</span>
+                </div>
+                <a href="{% url 'carrito:checkout' %}" class="btn-pagar">💳 Continuar con el pedido</a>
+            </div>
+        {% else %}
+            <div class="vacio">
+                <span class="vacio-icono">🛒</span>
+                <h3>Tu carrito está vacío</h3>
+                <p>Agrega productos para verlos aquí.</p>
+            </div>
+        {% endif %}
+
+        <div class="volver-wrapper">
+            <a href="{% url 'usuarios:tienda_home' %}" class="volver">← Seguir comprando</a>
+        </div>
+    </div>
+</body>
+</html>

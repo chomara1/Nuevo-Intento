@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguimiento #{{ envio.numero_guia }}</title>
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-500: #9b59b6;
+            --purple-400: #b38cd9;
+            --purple-300: #c9a8e0;
+            --purple-200: #e0d0f0;
+            --purple-100: #f3ebf9;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--purple-50);
+            margin: 0;
+        }
+
+        .header-rastreo {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .contenedor-rastreo {
+            max-width: 650px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+        }
+
+        .tarjeta-info {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-bottom: 24px;
+        }
+
+        .tarjeta-info p {
+            margin: 6px 0;
+            color: var(--purple-800);
+        }
+
+        .estado-actual {
+            display: inline-block;
+            background: var(--purple-600);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .linea-tiempo {
+            list-style: none;
+            padding: 0 0 0 20px;
+            border-left: 3px solid var(--purple-400);
+        }
+
+        .linea-tiempo li {
+            position: relative;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px 18px;
+            margin: 0 0 16px 20px;
+        }
+
+        .linea-tiempo li::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: var(--purple-600);
+            border-radius: 50%;
+            position: absolute;
+            left: -33px;
+            top: 18px;
+            box-shadow: 0 0 0 4px var(--purple-100);
+        }
+
+        .linea-tiempo strong {
+            color: var(--purple-900);
+        }
+
+        .linea-tiempo span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--purple-500);
+        }
+
+        .linea-tiempo p {
+            margin: 6px 0 0;
+            color: var(--purple-700);
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--purple-700);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-rastreo">
+        <h2>🚚 Seguimiento del pedido</h2>
+    </div>
+
+    <div class="contenedor-rastreo">
+        <div class="tarjeta-info">
+            <p><strong>Código:</strong> #{{ envio.numero_guia }}</p>
+            <p><strong>Producto:</strong> {{ envio.producto }}</p>
+            <p><strong>Fecha del pedido:</strong> {{ envio.fecha_creacion|date:"d/m/Y H:i" }}</p>
+            <span class="estado-actual">{{ envio.get_estado_actual_display }}</span>
+        </div>
+
+        <ul class="linea-tiempo">
+            {% for paso in envio.historial.all %}
+                <li>
+                    <strong>{{ paso.get_estado_display }}</strong>
+                    <span>{{ paso.fecha|date:"d/m/Y H:i" }}</span>
+                    {% if paso.comentario %}<p>{{ paso.comentario }}</p>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'rastreo:mis_envios' %}" class="volver">← Volver a mis pedidos</a>
+    </div>
+</body>
+</html>

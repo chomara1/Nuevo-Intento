@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Producto - Nebula</title>
+    <!-- Enlace directo a su propio archivo CSS de formulario -->
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+</head>
+<body>
+
+<div class="contenedor-formulario">
+    <h2>Registrar Nuevo Producto</h2>
+    <p class="subtitulo">Completa los detalles técnicos del producto que vas a ofrecer al inventario.</p>
+    <hr class="separador">
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="campos-formulario">
+            {{ form.as_p }}
+        </div>
+
+        <div class="grupo-botones">
+            <button type="submit" class="btn-primario">
+                Guardar en Inventario
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn-cancelar">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio y Registro</title>
+    <link rel="stylesheet" href="{% static 'inicio.css' %}">
+</head>
+<body>
+    
+<div class="container">
+    <div class="left-side">
+        <div class="tabs">
+            <span id="logintap" class="active">Login</span>
+            <span id="signuptap">Sign Up</span>
+        </div>
+    </div>
+
+    <div class="right-side">
+        <form id="loginForm" method="POST" action="{% url 'usuarios:login' %}" class="active">
+            {% csrf_token %} 
+            <div class="profile-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <h2>LOGIN</h2>
+
+            {% if error %}
+                <p style="color: rgba(255, 0, 0, 0.788);">{{ error }}</p>
+            {% endif %}
+
+            <div class="input-box">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" name="username" placeholder="Email" required>
+            </div>
+
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="btn-login">LOGIN</button>
+        </form>
+ 
+        <form id="signupForm" method="POST" action="{% url 'usuarios:registro' %}">
+            {% csrf_token %} 
+            <div class="profile-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h2>Sign Up</h2>
+
+            {% if error %}
+                <p style="color: rgba(255, 0, 0, 0.788);">{{ error }}</p>
+            {% endif %}
+
+            <div class="input-box">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" name="username" placeholder="Full Name" required>
+            </div>
+
+            <div class="input-box">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="input-box.tipo-cuenta">
+                <label><input type="radio" name="tipo_cuenta" value="CLIENTE" checked> Soy cliente</label>
+                <label><input type="radio" name="tipo_cuenta" value="PROVEEDOR"> Quiero vender como proveedor</label>
+            </div>
+
+            <button type="submit" class="btn-login">SIGN UP</button>
+        </form>  
+    </div>
+</div>
+
+<script src="{% static 'inicio.js' %}"></script>
+</body>
+</html>
