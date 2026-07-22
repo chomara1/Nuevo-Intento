@@ -11,7 +11,6 @@ class DisenoSitioAdmin(admin.ModelAdmin):
     )
 
     def has_add_permission(self, request):
-        # Ya existe el registro pk=1 desde el primer .cargar(); no se permite crear otro
         return not DisenoSitio.objects.exists()
 
     def has_delete_permission(self, request, obj=None):

@@ -16,10 +16,10 @@ def dashboard_proveedor(request):
 
     Envio = apps.get_model('rastreo', 'Envio')
 
-    # Productos de este proveedor
+    #Productos de este proveedor
     mis_productos = Producto.objects.filter(proveedor=request.user)
 
-    # Envíos (ventas) de productos de este proveedor, sin contar los cancelados
+    #ventas de productos de este proveedor
     ventas_proveedor = Envio.objects.filter(
         producto__proveedor=request.user
     ).exclude(estado_actual='cancelado')
@@ -39,7 +39,7 @@ def dashboard_proveedor(request):
         )
     )['total']
 
-    # --- Producto más vendido (histórico, de todas las ventas) ---
+    # --- Producto más vendido del mes ---
     producto_mas_vendido = (
         ventas_proveedor
         .values('producto__id', 'producto__nombre')
@@ -49,7 +49,6 @@ def dashboard_proveedor(request):
     )
 
     if producto_mas_vendido:
-        # Le damos forma de objeto simple para usarlo fácil en el template
         producto_mas_vendido = {
             'nombre': producto_mas_vendido['producto__nombre'],
             'total_vendido': producto_mas_vendido['total_vendido'],
