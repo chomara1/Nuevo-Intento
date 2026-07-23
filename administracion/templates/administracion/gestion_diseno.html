@@ -1,116 +1,101 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Diseño — Nebula Admin</title>
-    <link rel="stylesheet" href="{% static 'dash.css' %}">
-</head>
-<body>
+{% extends 'administracion/base_admin.html' %}
 
-    <header class="site-header" id="siteHeader">
-        <div class="header-inner">
-            <div class="top-header">
-                <a href="{% url 'administracion:dashboard' %}" class="logo" aria-label="Nebula — volver al panel">
-                    <span class="logo-mark">🛸</span>
-                    <span class="logo-word">nebula</span>
-                </a>
+{% block titulo %}Gestión de diseño{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .diseno-form { display: flex; flex-direction: column; gap: 24px; }
+    .diseno-slide-block { border: 1px solid var(--purple-200); border-radius: 10px; padding: 18px; }
+    .diseno-slide-block h3 { margin-top: 0; color: var(--purple-800); }
+    .diseno-field { margin-bottom: 14px; }
+    .diseno-field label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; }
+    .diseno-field input[type="text"],
+    .diseno-field textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    .diseno-colors { display: flex; gap: 16px; }
+    .diseno-colors .diseno-field { flex: 1; }
+    input[type="color"] { width: 60px; height: 36px; border: none; padding: 0; cursor: pointer; }
+</style>
+{% endblock %}
+
+{% block contenido %}
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px;">
+        <h1 style="margin-bottom:0;">🎨 Gestión de Diseño — Carrusel de Inicio</h1>
+        <a href="{% url 'usuarios:tienda_home' %}" target="_blank" rel="noopener" class="btn btn-approve">
+            👁 Ver cambios en la tienda
+        </a>
+    </div>
+
+    <section class="admin-card">
+        <form method="post" class="diseno-form">
+            {% csrf_token %}
+
+            <div class="diseno-slide-block">
+                <h3>Slide 1</h3>
+                <div class="diseno-field">
+                    <label for="{{ form.slide1_titulo.id_for_label }}">{{ form.slide1_titulo.label }}</label>
+                    {{ form.slide1_titulo }}
+                </div>
+                <div class="diseno-field">
+                    <label for="{{ form.slide1_texto.id_for_label }}">{{ form.slide1_texto.label }}</label>
+                    {{ form.slide1_texto }}
+                </div>
+                <div class="diseno-colors">
+                    <div class="diseno-field">
+                        <label for="{{ form.slide1_color_a.id_for_label }}">{{ form.slide1_color_a.label }}</label>
+                        {{ form.slide1_color_a }}
+                    </div>
+                    <div class="diseno-field">
+                        <label for="{{ form.slide1_color_b.id_for_label }}">{{ form.slide1_color_b.label }}</label>
+                        {{ form.slide1_color_b }}
+                    </div>
+                </div>
             </div>
-        </div>
-    </header>
 
-    <main class="main-container">
-        <div class="page-header">
-            <h1>🎨 Gestión de Diseño — Carrusel de Inicio</h1>
-        </div>
-
-        {% if messages %}
-            <ul class="messages-list">
-            {% for message in messages %}
-                <li class="message {{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-
-        <section class="admin-card">
-            <form method="post" class="diseno-form">
-                {% csrf_token %}
-
-                <div class="diseno-slide-block">
-                    <h3>Slide 1</h3>
+            <div class="diseno-slide-block">
+                <h3>Slide 2</h3>
+                <div class="diseno-field">
+                    <label for="{{ form.slide2_titulo.id_for_label }}">{{ form.slide2_titulo.label }}</label>
+                    {{ form.slide2_titulo }}
+                </div>
+                <div class="diseno-field">
+                    <label for="{{ form.slide2_texto.id_for_label }}">{{ form.slide2_texto.label }}</label>
+                    {{ form.slide2_texto }}
+                </div>
+                <div class="diseno-colors">
                     <div class="diseno-field">
-                        <label for="{{ form.slide1_titulo.id_for_label }}">{{ form.slide1_titulo.label }}</label>
-                        {{ form.slide1_titulo }}
+                        <label for="{{ form.slide2_color_a.id_for_label }}">{{ form.slide2_color_a.label }}</label>
+                        {{ form.slide2_color_a }}
                     </div>
                     <div class="diseno-field">
-                        <label for="{{ form.slide1_texto.id_for_label }}">{{ form.slide1_texto.label }}</label>
-                        {{ form.slide1_texto }}
-                    </div>
-                    <div class="diseno-colors">
-                        <div class="diseno-field">
-                            <label for="{{ form.slide1_color_a.id_for_label }}">{{ form.slide1_color_a.label }}</label>
-                            {{ form.slide1_color_a }}
-                        </div>
-                        <div class="diseno-field">
-                            <label for="{{ form.slide1_color_b.id_for_label }}">{{ form.slide1_color_b.label }}</label>
-                            {{ form.slide1_color_b }}
-                        </div>
+                        <label for="{{ form.slide2_color_b.id_for_label }}">{{ form.slide2_color_b.label }}</label>
+                        {{ form.slide2_color_b }}
                     </div>
                 </div>
+            </div>
 
-                <div class="diseno-slide-block">
-                    <h3>Slide 2</h3>
+            <div class="diseno-slide-block">
+                <h3>Slide 3</h3>
+                <div class="diseno-field">
+                    <label for="{{ form.slide3_titulo.id_for_label }}">{{ form.slide3_titulo.label }}</label>
+                    {{ form.slide3_titulo }}
+                </div>
+                <div class="diseno-field">
+                    <label for="{{ form.slide3_texto.id_for_label }}">{{ form.slide3_texto.label }}</label>
+                    {{ form.slide3_texto }}
+                </div>
+                <div class="diseno-colors">
                     <div class="diseno-field">
-                        <label for="{{ form.slide2_titulo.id_for_label }}">{{ form.slide2_titulo.label }}</label>
-                        {{ form.slide2_titulo }}
+                        <label for="{{ form.slide3_color_a.id_for_label }}">{{ form.slide3_color_a.label }}</label>
+                        {{ form.slide3_color_a }}
                     </div>
                     <div class="diseno-field">
-                        <label for="{{ form.slide2_texto.id_for_label }}">{{ form.slide2_texto.label }}</label>
-                        {{ form.slide2_texto }}
-                    </div>
-                    <div class="diseno-colors">
-                        <div class="diseno-field">
-                            <label for="{{ form.slide2_color_a.id_for_label }}">{{ form.slide2_color_a.label }}</label>
-                            {{ form.slide2_color_a }}
-                        </div>
-                        <div class="diseno-field">
-                            <label for="{{ form.slide2_color_b.id_for_label }}">{{ form.slide2_color_b.label }}</label>
-                            {{ form.slide2_color_b }}
-                        </div>
+                        <label for="{{ form.slide3_color_b.id_for_label }}">{{ form.slide3_color_b.label }}</label>
+                        {{ form.slide3_color_b }}
                     </div>
                 </div>
+            </div>
 
-                <div class="diseno-slide-block">
-                    <h3>Slide 3</h3>
-                    <div class="diseno-field">
-                        <label for="{{ form.slide3_titulo.id_for_label }}">{{ form.slide3_titulo.label }}</label>
-                        {{ form.slide3_titulo }}
-                    </div>
-                    <div class="diseno-field">
-                        <label for="{{ form.slide3_texto.id_for_label }}">{{ form.slide3_texto.label }}</label>
-                        {{ form.slide3_texto }}
-                    </div>
-                    <div class="diseno-colors">
-                        <div class="diseno-field">
-                            <label for="{{ form.slide3_color_a.id_for_label }}">{{ form.slide3_color_a.label }}</label>
-                            {{ form.slide3_color_a }}
-                        </div>
-                        <div class="diseno-field">
-                            <label for="{{ form.slide3_color_b.id_for_label }}">{{ form.slide3_color_b.label }}</label>
-                            {{ form.slide3_color_b }}
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-approve" style="align-self: flex-start;">💾 Guardar cambios</button>
-            </form>
-        </section>
-
-        <nav class="admin-actions">
-            <a href="{% url 'administracion:dashboard' %}" class="btn btn-secondary">← Volver al Panel</a>
-        </nav>
-    </main>
-
-</body>
-</html>
+            <button type="submit" class="btn btn-approve" style="align-self: flex-start;">💾 Guardar cambios</button>
+        </form>
+    </section>
+{% endblock %}

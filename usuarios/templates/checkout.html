@@ -278,46 +278,46 @@
                 {% csrf_token %}
 
                 <div class="campo">
-                    <label for="nombre">Nombre completo</label>
+                    <label for="nombre">Nombre completo *</label>
                     <input type="text" id="nombre" name="nombre" placeholder="Ej: Maria Gómez" required>
                 </div>
 
                 <div class="fila-doble">
                     <div class="campo">
-                        <label for="telefono">Teléfono</label>
+                        <label for="telefono">Teléfono *</label>
                         <input type="tel" id="telefono" name="telefono" placeholder="Ej: 3001234567" required>
                     </div>
                     <div class="campo">
-                        <label for="correo">Correo electrónico</label>
+                        <label for="correo">Correo electrónico *</label>
                         <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
                     </div>
                 </div>
 
                 <div class="campo">
-                    <label for="direccion">Dirección de entrega</label>
+                    <label for="direccion">Dirección de entrega *</label>
                     <input type="text" id="direccion" name="direccion" placeholder="Calle, número, barrio" required>
                 </div>
 
                 <div class="fila-doble">
                     <div class="campo">
-                        <label for="departamento">Departamento</label>
+                        <label for="departamento">Departamento *</label>
                         <input type="text" id="departamento" name="departamento" placeholder="Ej: Cundinamarca" required>
                     </div>
                     <div class="campo">
-                        <label for="ciudad">Ciudad</label>
+                        <label for="ciudad">Ciudad *</label>
                         <input type="text" id="ciudad" name="ciudad" placeholder="Ej: Bogotá" required>
                     </div>
                 </div>
 
                 <div class="campo">
-                    <label>Método de pago</label>
+                    <label>Método de pago *</label>
                     <div class="metodos-pago">
                         <label class="opcion-pago">
                             <input type="radio" name="metodo_pago" value="nequi" required>
                             <span>Nequi</span>
                         </label>
                         <label class="opcion-pago">
-                            <input type="radio" name="metodo_pago" value="tarjeta">
+                            <input type="radio" name="metodo_pago" value="tarjeta" >
                             <span>Tarjeta</span>
                         </label>
                         <label class="opcion-pago">

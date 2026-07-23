@@ -1,0 +1,46 @@
+{% extends 'administracion/base_admin.html' %}
+
+{% block titulo %}Estado de pedidos{% endblock %}
+
+{% block contenido %}
+    <h1>📦 Estado de Pedidos</h1>
+
+    <section class="admin-card">
+        {% if pedidos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Código de pedido</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Estado actual</th>
+                        <th>Cambiar estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for envio in pedidos %}
+                    <tr>
+                        <td>{{ envio.numero_guia }}</td>
+                        <td>{{ envio.cliente.username }}</td>
+                        <td>{{ envio.producto.nombre }}</td>
+                        <td>{{ envio.get_estado_actual_display }}</td>
+                        <td>
+                            <form method="post" action="{% url 'administracion:actualizar_estado_pedido' envio_id=envio.id %}" style="display:flex; gap:8px;">
+                                {% csrf_token %}
+                                <select name="estado_actual" class="select-estado">
+                                    {% for valor, etiqueta in estados %}
+                                        <option value="{{ valor }}" {% if valor == envio.estado_actual %}selected{% endif %}>{{ etiqueta }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-approve">Guardar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Todavía no hay pedidos registrados.</p>
+        {% endif %}
+    </section>
+{% endblock %}

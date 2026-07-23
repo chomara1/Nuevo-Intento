@@ -246,3 +246,14 @@ body {
         .messages-list { list-style: none; padding: 0; margin: 0 0 20px; }
         .messages-list .message { padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.95rem; }
         .messages-list .message.success { background: #d7f5e0; color: #1c6b3a; }
+
+        .diseno-form { display: flex; flex-direction: column; gap: 24px; }
+    .diseno-slide-block { border: 1px solid var(--purple-200); border-radius: 10px; padding: 18px; }
+    .diseno-slide-block h3 { margin-top: 0; color: var(--purple-800); }
+    .diseno-field { margin-bottom: 14px; }
+    .diseno-field label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; }
+    .diseno-field input[type="text"],
+    .diseno-field textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    .diseno-colors { display: flex; gap: 16px; }
+    .diseno-colors .diseno-field { flex: 1; }
+    input[type="color"] { width: 60px; height: 36px; border: none; padding: 0; cursor: pointer; }

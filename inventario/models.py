@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
+from django.core.validators import MinValueValidator
 
 
 class Categoria(models.Model):
@@ -30,7 +32,11 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=150)
     marca = models.CharField(max_length=100, blank=True, null=True)
     descripcion = models.TextField()
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    precio = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
     cantidad_disponible = models.PositiveIntegerField(default=0)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     esta_activo = models.BooleanField(default=True, help_text="Permite pausar la venta del producto sin eliminarlo")

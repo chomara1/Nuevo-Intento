@@ -8,20 +8,25 @@ from .forms import DisenoSitioForm
 
 @admin_required
 def dashboard(request):
+    Perfil = apps.get_model("usuarios", "Perfil")
+    
     proveedores_pendientes = (
-        apps.get_model('usuarios', 'Perfil').objects
+        Perfil.objects
         .filter(rol='PROVEEDOR', aprobado=False)
         .select_related('usuario')
         .order_by('-id')
     )
     return render(request, 'administracion/dashboard.html', {
         'proveedores_pendientes': proveedores_pendientes,
+        'active': 'proveedores',
     })
 
 
 @admin_required
 def aprobar_proveedor(request, perfil_id):
-    perfil = get_object_or_404(apps.get_model('usuarios', 'Perfil'), id=perfil_id, rol='PROVEEDOR')
+    Perfil = apps.get_model("usuarios", "Perfil")
+    
+    perfil = get_object_or_404(Perfil, id=perfil_id, rol='PROVEEDOR')
     perfil.aprobado = True
     perfil.save()
     messages.success(request, f"El proveedor {perfil.usuario.username} fue aprobado correctamente.")
@@ -30,7 +35,9 @@ def aprobar_proveedor(request, perfil_id):
 
 @admin_required
 def rechazar_proveedor(request, perfil_id):
-    perfil = get_object_or_404(apps.get_model('usuarios', 'Perfil'), id=perfil_id, rol='PROVEEDOR')
+    Perfil = apps.get_model("usuarios", "Perfil")
+    
+    perfil = get_object_or_404(Perfil, id=perfil_id, rol='PROVEEDOR')
     usuario = perfil.usuario
     nombre = usuario.username
     usuario.delete()  # borra el User y, en cascada, su Perfil
@@ -51,4 +58,57 @@ def gestion_diseno(request):
     else:
         form = DisenoSitioForm(instance=diseno)
 
-    return render(request, 'administracion/gestion_diseno.html', {'form': form})
+    return render(request, 'administracion/gestion_diseno.html', {
+        'form': form,
+        'active': 'diseno',
+    })
+
+
+@admin_required
+def pagos(request):
+    Envio = apps.get_model('rastreo', 'Envio')
+    pagos_lista = (
+        Envio.objects
+        .exclude(estado_actual='cancelado')
+        .select_related('cliente', 'producto')
+        .order_by('-fecha_creacion')
+    )
+    return render(request, 'administracion/pagos.html', {
+        'pagos': pagos_lista,
+        'active': 'pagos',
+    })
+
+
+@admin_required
+def pedidos(request):
+    Envio = apps.get_model('rastreo', 'Envio')
+    pedidos_lista = (
+        Envio.objects
+        .select_related('cliente', 'producto')
+        .order_by('-fecha_creacion')
+    )
+    return render(request, 'administracion/pedidos.html', {
+        'pedidos': pedidos_lista,
+        'estados': Envio.ESTADOS,
+        'active': 'pedidos',
+    })
+
+
+@admin_required
+def actualizar_estado_pedido(request, envio_id):
+    Envio = apps.get_model('rastreo', 'Envio')
+    HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
+    envio = get_object_or_404(Envio, id=envio_id)
+
+    if request.method == 'POST':
+        nuevo_estado = request.POST.get('estado_actual')
+        estados_validos = dict(Envio.ESTADOS)
+        if nuevo_estado in estados_validos:
+            envio.estado_actual = nuevo_estado
+            envio.save()
+            HistorialEstado.objects.create(envio=envio, estado=nuevo_estado)
+            messages.success(request, f"El pedido {envio.numero_guia} se actualizó a '{estados_validos[nuevo_estado]}'.")
+        else:
+            messages.error(request, "Estado inválido.")
+
+    return redirect('administracion:pedidos')

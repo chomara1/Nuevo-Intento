@@ -18,7 +18,7 @@ class Perfil(models.Model):
  
     def save(self, *args, **kwargs):
         # Solo se fuerza aprobado=False la PRIMERA vez que se crea
-        # un perfil de tipo PROVEEDOR (self.pk is None = aún no existe en BD).
+        # un perfil de tipo PROVEEDOR 
         # Así, si el admin lo aprueba después y vuelve a guardar, no se
         # le pisa el valor.
         if self.pk is None and self.rol == 'PROVEEDOR':

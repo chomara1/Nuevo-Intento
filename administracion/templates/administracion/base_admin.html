@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Panel de Administración{% endblock %} — Nebula Admin</title>
+    <link rel="stylesheet" href="{% static 'dash.css' %}">
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    {% block estilos_extra %}{% endblock %}
+</head>
+<body>
+
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div class="admin-profile">
+            <div class="avatar-circle">{{ request.user.username|first|upper }}</div>
+            <p class="admin-name">{{ request.user.username }}</p>
+            <p class="admin-role">Administrador</p>
+        </div>
+        <nav class="admin-nav">
+            <a href="{% url 'administracion:dashboard' %}" class="{% if active == 'proveedores' %}active{% endif %}">🔒 Proveedores</a>
+            <a href="{% url 'administracion:pagos' %}" class="{% if active == 'pagos' %}active{% endif %}">💳 Registro de pagos</a>
+            <a href="{% url 'administracion:pedidos' %}" class="{% if active == 'pedidos' %}active{% endif %}">📦 Estado de pedidos</a>
+            <a href="{% url 'administracion:gestion_diseno' %}" class="{% if active == 'diseno' %}active{% endif %}">🎨 Editar página</a>
+            <hr>
+            <a href="{% url 'usuarios:tienda_home' %}" target="_blank" rel="noopener">↗ Ver tienda pública</a>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        {% if messages %}
+            <ul class="messages-list">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block contenido %}{% endblock %}
+    </main>
+</div>
+
+</body>
+</html>

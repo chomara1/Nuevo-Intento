@@ -5,10 +5,10 @@ from inventario.models import Producto
 
 class Envio(models.Model):
     ESTADOS = [
-        ('preparando', 'Preparando pedido'),
-        ('en_camino', 'En camino'),
-        ('en_reparto', 'En reparto local'),
-        ('entregado', 'Entregado'),
+        ('preparando', 'En preparación'),
+        ('listo', 'Listo'),
+        ('en_camino', 'En viaje'),
+        ('entregado', 'Llegó a su destino'),
         ('cancelado', 'Cancelado'),
     ]
 

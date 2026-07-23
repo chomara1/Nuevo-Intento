@@ -66,6 +66,12 @@
           
           <div class="user-navigation">
             {% if request.user.is_authenticated %}
+              {% if request.user.perfil.rol == 'ADMIN' %}
+                <a href="{% url 'administracion:dashboard' %}" class="icon-btn" aria-label="Ir al panel de administración" style="text-decoration: none;">
+                  <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 600;">🛠 Panel Admin</span>
+                </a>
+              {% endif %}
+
               <a href="{% url 'usuarios:perfil' %}" class="icon-btn" aria-label="Ver mi perfil" style="text-decoration: none;">
                 <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 500;">Hola, {{ request.user.username }}</span>
               </a>
@@ -99,10 +105,6 @@
             </div>
 
             <div class="cat-grupo">
-<<<<<<< HEAD
-=======
-
->>>>>>> 9f9623535d8c254d22e46fbb2aee3a2d8aa50372
               <span class="cat-grupo-titulo">Estilizadores</span>
               <label><input type="checkbox" value="cepillos electricos" class="cat-check"> Cepillos Eléctricos</label>
               <label><input type="checkbox" value="secadores" class="cat-check"> Secadores</label>
@@ -156,11 +158,6 @@
       <p class="hero-copy">{{ diseno.slide1_texto }}</p>
       <a href="#grid" class="hero-cta">Ver catálogo</a>
     </article>
-<<<<<<< HEAD
- 
-=======
-    
->>>>>>> 9f9623535d8c254d22e46fbb2aee3a2d8aa50372
     <!-- Slide 2 -->
     <article class="hero-slide" style="--slide-a:{{ diseno.slide2_color_a }}; --slide-b:{{ diseno.slide2_color_b }};">
       <p class="hero-eyebrow">Ofertas de temporada</p>

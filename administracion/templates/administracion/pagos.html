@@ -1,0 +1,39 @@
+{% extends 'administracion/base_admin.html' %}
+{% load humanize %}
+
+{% block titulo %}Registro de pagos{% endblock %}
+
+{% block contenido %}
+    <h1>💳 Registro de Pagos</h1>
+
+    <section class="admin-card">
+        {% if pagos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Código de pedido</th>
+                        <th>Producto</th>
+                        <th>Método de pago</th>
+                        <th>Total pagado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for envio in pagos %}
+                    <tr>
+                        <td>{{ envio.cliente.username }}</td>
+                        <td>{{ envio.correo|default:envio.cliente.email }}</td>
+                        <td>{{ envio.numero_guia }}</td>
+                        <td>{{ envio.producto.nombre }}</td>
+                        <td>{{ envio.get_metodo_pago_display|default:"—" }}</td>
+                        <td>$ {{ envio.subtotal|floatformat:0|intcomma }} COP</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Todavía no se ha registrado ningún pago.</p>
+        {% endif %}
+    </section>
+{% endblock %}
