@@ -294,7 +294,7 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(135deg, var(--purple-700), var(--purple-900));
+  background: linear-gradient(135deg, var(--slide-a, var(--purple-700)), var(--slide-b, var(--purple-900)));
   color: #fff;
   border-radius: var(--radius);
 }
@@ -1032,4 +1032,34 @@ img {
   .quickview-modal {
     padding: 1rem;
   }
+}
+
+.hero-slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slide-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero-slide.has-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.55), rgba(0,0,0,0.15));
+  z-index: 1;
+}
+
+.hero-slide.has-image .hero-eyebrow,
+.hero-slide.has-image h1,
+.hero-slide.has-image .hero-copy,
+.hero-slide.has-image .hero-cta {
+  position: relative;
+  z-index: 2;
 }

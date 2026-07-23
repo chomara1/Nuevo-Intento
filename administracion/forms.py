@@ -6,9 +6,9 @@ class DisenoSitioForm(forms.ModelForm):
     class Meta:
         model = DisenoSitio
         fields = [
-            'slide1_titulo', 'slide1_texto', 'slide1_color_a', 'slide1_color_b',
-            'slide2_titulo', 'slide2_texto', 'slide2_color_a', 'slide2_color_b',
-            'slide3_titulo', 'slide3_texto', 'slide3_color_a', 'slide3_color_b',
+            'slide1_titulo', 'slide1_texto', 'slide1_color_a', 'slide1_color_b', 'slide1_imagen',
+            'slide2_titulo', 'slide2_texto', 'slide2_color_a', 'slide2_color_b', 'slide2_imagen',
+            'slide3_titulo', 'slide3_texto', 'slide3_color_a', 'slide3_color_b', 'slide3_imagen',
         ]
         widgets = {
             'slide1_texto': forms.Textarea(attrs={'rows': 2}),
@@ -34,4 +34,7 @@ class DisenoSitioForm(forms.ModelForm):
             'slide3_texto': 'Texto — Slide 3',
             'slide3_color_a': 'Color inicial degradado',
             'slide3_color_b': 'Color final degradado',
+            'slide1_imagen': 'Imagen — Slide 1 (opcional)',
+            'slide2_imagen': 'Imagen — Slide 2 (opcional)',
+            'slide3_imagen': 'Imagen — Slide 3 (opcional)',
         }
