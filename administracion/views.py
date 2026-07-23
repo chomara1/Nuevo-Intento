@@ -50,7 +50,7 @@ def gestion_diseno(request):
     diseno = DisenoSitio.cargar()
 
     if request.method == 'POST':
-        form = DisenoSitioForm(request.POST, instance=diseno)
+        form = DisenoSitioForm(request.POST, request.FILES, instance=diseno)
         if form.is_valid():
             form.save()
             messages.success(request, "El diseño de la página se actualizó correctamente.")

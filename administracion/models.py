@@ -19,6 +19,7 @@ class DisenoSitio(models.Model):
     )
     slide1_color_a = models.CharField(max_length=7, default="#6C3B8C")
     slide1_color_b = models.CharField(max_length=7, default="#2D1B4E")
+    slide1_imagen = models.ImageField(upload_to='carrusel/', blank=True, null=True)
 
     # --- Slide 2 ---
     slide2_titulo = models.CharField(
@@ -31,6 +32,7 @@ class DisenoSitio(models.Model):
     )
     slide2_color_a = models.CharField(max_length=7, default="#8E44AD")
     slide2_color_b = models.CharField(max_length=7, default="#4A1F6A")
+    slide2_imagen = models.ImageField(upload_to='carrusel/', blank=True, null=True)
 
     # --- Slide 3 ---
     slide3_titulo = models.CharField(
@@ -43,6 +45,7 @@ class DisenoSitio(models.Model):
     )
     slide3_color_a = models.CharField(max_length=7, default="#9B59B6")
     slide3_color_b = models.CharField(max_length=7, default="#2D1B4E")
+    slide3_imagen = models.ImageField(upload_to='carrusel/', blank=True, null=True)
 
     actualizado = models.DateTimeField(auto_now=True)
 
