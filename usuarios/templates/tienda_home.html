@@ -140,7 +140,7 @@
 
         <ul class="nav-links" id="navLinks">
           <li><a href="#inicio" data-nav="inicio" class="active-link">Inicio</a></li>
-          <li><a href="#grid" data-nav="nueva">Nueva Colección</a></li>
+          <li><a href="#nueva-coleccion" data-nav="nueva">Nueva Colección</a></li>
           <li><a href="/rastreo/mis-envios/">Mis pedidos</a></li>
         </ul>
       </nav>
@@ -189,6 +189,15 @@
   <section class="product-grid" id="grid" style="margin-top: 40px;">
 
     {% for producto in productos %}
+     {% ifchanged producto.es_nueva_coleccion %}
+      {% if producto.es_nueva_coleccion %}
+       </section>
+       <div class="section-divider" id="nueva-coleccion">
+        <h2>✨ Nueva Colección</h2>
+      </div>
+      <section class="product-grid">
+    {% endif %}
+  {% endifchanged %}
     <article class="product-card"
       data-category="{% if producto.categoria %}{{ producto.categoria.nombre|lower }}{% else %}otros{% endif %}"
       data-new="{{ producto.es_nuevo|yesno:'true,false' }}" data-store="true"

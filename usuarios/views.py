@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.apps import apps
 from .models import Perfil
+from django.db.models import Case, When, Value, IntegerField
 
 # ==========================================
 # 1. TIENDA HOME (VISTA PÚBLICA)
@@ -14,14 +15,20 @@ def tienda_home(request):
     Producto = apps.get_model('inventario', 'Producto')
     DisenoSitio = apps.get_model('administracion', 'DisenoSitio')
 
-    productos = Producto.objects.filter(esta_activo=True)
+    productos = Producto.objects.filter(esta_activo=True).annotate(
+        es_nueva_coleccion=Case(
+            When(categoria__nombre='Nueva Colección', then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).order_by('es_nueva_coleccion', '-fecha_creacion')
+
     diseno = DisenoSitio.cargar()
 
     return render(request, 'tienda_home.html', {
         'productos': productos,
         'diseno': diseno,
     })
-
 # ==========================================
 # 2. INICIO DE SESIÓN (LOGIN)
 # ==========================================
