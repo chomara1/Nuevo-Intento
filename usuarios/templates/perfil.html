@@ -1,37 +1,13 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Perfil</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght=500;600;700;800&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="{% static 'perfil.css' %}">
-</head>
-<body>
+{% block title %}Mi Perfil · Nebula{% endblock %}
 
-  <svg class="icon-sprite" aria-hidden="true">
-    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20c1.4-3.6 4.4-5.6 7.5-5.6s6.1 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2z" fill="currentColor"/></symbol>
-    <symbol id="i-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-  </svg>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'perfil.css' %}">
+{% endblock %}
 
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="{% url 'usuarios:tienda_home' %}" class="logo" aria-label="Nebula — ir al inicio">
-        <span class="logo-mark"><svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-sparkle"/></svg></span>
-        <span class="logo-word">nebula</span>
-      </a>
-      <a href="{% url 'usuarios:tienda_home' %}" class="back-link">
-        <svg width="18" height="18"><use href="#i-chev-l"/></svg> Volver a la tienda
-      </a>
-    </div>
-  </header>
-
+{% block content %}
   <main class="profile-container">
     {% if request.user.is_authenticated %}
       <span id="django-username" style="display: none;">{{ request.user.username }}</span>
@@ -39,25 +15,18 @@
     {% endif %}
 
     <div class="profile-card" id="profileCard">
-      <div class="profile-avatar">
+      <div class="profile-avatar-placeholder">
         <svg width="40" height="40" style="color: #b38cd9;"><use href="#i-user"/></svg>
       </div>
       <h2>Mi Perfil</h2>
       <hr style="border: 0; border-top: 1px solid #3d2a54; margin: 1rem 0;">
-      
+
       <p style="margin: 0.5rem 0;"><strong>Nombre de usuario:</strong> {{ request.user.username }}</p>
       <p style="margin: 0.5rem 0;"><strong>Correo electrónico:</strong> {{ request.user.email }}</p>
     </div>
   </main>
+{% endblock %}
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <p>Colombia &copy; Nebula 2026. Todos los derechos reservados.</p>
-    </div>
-  </footer >
-
-  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
-
+{% block extra_js %}
 <script src="{% static 'perfil.js' %}"></script>
-</body> 
-</html>
+{% endblock %}

@@ -88,9 +88,6 @@
           <hr class="profile-divider" />
 
           <div class="profile-options">
-            <div class="option-card" id="editProfile">
-              <span class="icon">✏️</span> Mis datos
-            </div>
             <div class="option-card" id="myOrders">
               <span class="icon">📦</span> Mis pedidos
             </div>
@@ -103,14 +100,11 @@
           </div>
         `;
 
-        document.getElementById('editProfile')?.addEventListener('click', () => {
-          showToast('Próximamente podrás editar tus datos.');
-        });
         document.getElementById('myOrders')?.addEventListener('click', () => {
-          showToast('Tus pedidos aparecerán aquí.');
+          window.location.href = "/rastreo/mis-envios/";
         });
         document.getElementById('myFavorites')?.addEventListener('click', () => {
-          showToast('Tus productos favoritos se mostrarán aquí.');
+          window.location.href = "/usuarios/?ver=favoritos";
         });
         document.getElementById('logoutBtn')?.addEventListener('click', logout);
       }

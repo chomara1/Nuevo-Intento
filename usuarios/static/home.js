@@ -48,6 +48,28 @@
       // Toast
       const toastContainer = document.getElementById('toastContainer');
 
+      // ---------- Persistencia de favoritos ----------
+      const FAVORITOS_KEY = 'nebula_favoritos';
+
+      function cargarFavoritos() {
+        try {
+          const raw = localStorage.getItem(FAVORITOS_KEY);
+          if (!raw) return new Set();
+          const arr = JSON.parse(raw);
+          return new Set(Array.isArray(arr) ? arr : []);
+        } catch (e) {
+          return new Set();
+        }
+      }
+
+      function guardarFavoritos() {
+        try {
+          localStorage.setItem(FAVORITOS_KEY, JSON.stringify(Array.from(favorites)));
+        } catch (e) {
+          // localStorage no disponible (modo incógnito, etc.) - no rompe nada más
+        }
+      }
+
       // ---------- Estado ----------
       let activeFilters = {
         search: '',
@@ -56,7 +78,7 @@
         favoritesOnly: false
       };
 
-      let favorites = new Set(); // almacena referencias (data-ref)
+      let favorites = cargarFavoritos(); // ahora persiste entre páginas y recargas
       let cart = []; // almacena objetos { ref, title, price }
 
       // ---------- Funciones auxiliares ----------
@@ -342,6 +364,7 @@
             if (iconUse) iconUse.setAttribute('href', '#i-heart-fill');
             showToast('Agregado a favoritos ❤️');
           }
+          guardarFavoritos();
           favCount.textContent = favorites.size;
           favCount.hidden = favorites.size === 0;
           // Si estamos viendo "solo favoritos", refrescar para que desaparezca
@@ -349,6 +372,22 @@
           if (activeFilters.favoritesOnly) filterProducts();
         });
       });
+
+      // Marcar en rojo los corazones de los productos que ya eran favoritos
+      // (por ejemplo, al volver de otra página gracias a localStorage)
+      function sincronizarIconosFavoritos() {
+        document.querySelectorAll('.btn-fav').forEach(btn => {
+          const card = btn.closest('.product-card');
+          if (!card) return;
+          const ref = card.dataset.ref;
+          if (!ref || !favorites.has(ref)) return;
+          const iconUse = btn.querySelector('svg use');
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+          if (iconUse) iconUse.setAttribute('href', '#i-heart-fill');
+        });
+      }
+      sincronizarIconosFavoritos();
 
       // Corazón del header: alterna entre "ver todo" y "ver solo mis favoritos"
       if (favToggleBtn) {
@@ -363,6 +402,17 @@
           }
           filterProducts();
         });
+      }
+
+      // Si llegamos con ?ver=favoritos en la URL (por ejemplo, desde el botón
+      // "Mis favoritos" del perfil), activamos el filtro automáticamente.
+      const parametrosUrl = new URLSearchParams(window.location.search);
+      if (parametrosUrl.get('ver') === 'favoritos' && favToggleBtn) {
+        activeFilters.favoritesOnly = true;
+        favToggleBtn.classList.add('active');
+        favToggleBtn.setAttribute('aria-pressed', 'true');
+        const iconUse = favToggleBtn.querySelector('svg use');
+        if (iconUse) iconUse.setAttribute('href', '#i-heart-fill');
       }
 
       // ---------- Carrito ----------
@@ -555,6 +605,9 @@
 
       // Contadores iniciales
       if (cartCount) cartCount.hidden = true;
-      if (favCount) favCount.hidden = true;
+      if (favCount) {
+        favCount.textContent = favorites.size;
+        favCount.hidden = favorites.size === 0;
+      }
 
     })();

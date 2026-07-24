@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Producto - Nebula</title>
+    <link rel="stylesheet" href="{% static 'home.css' %}">
     <style>
         :root {
             --purple-900: #2d1b4e;
@@ -38,41 +39,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 30px;
+            padding: 28px 48px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 14px;
         }
 
         .barra-usuario-info {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 6px;
         }
 
         .barra-usuario-nombre {
             font-weight: 700;
-            font-size: 14px;
+            font-size: 26px;
         }
 
         .barra-usuario-correo {
-            font-size: 12px;
-            opacity: 0.75;
+            font-size: 16px;
+            opacity: 0.8;
         }
 
         .barra-usuario-acciones {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 16px;
         }
 
         .btn-barra {
             display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
             color: white;
             background: transparent;
             cursor: pointer;
@@ -84,13 +85,19 @@
         }
 
         .btn-salir {
+            border-color: rgba(255, 255, 255, 0.55);
             font-family: inherit;
         }
 
+        .form-inline {
+            display: inline-block;
+            margin: 0;
+        }
+
         .contenedor-formulario {
-            max-width: 700px;
+            max-width: 1000px;
             margin: 40px auto;
-            padding: 30px 40px;
+            padding: 40px 50px;
             background-color: white;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
@@ -196,6 +203,11 @@
             .barra-usuario {
                 flex-direction: column;
                 align-items: flex-start;
+                padding: 20px 24px;
+            }
+
+            .barra-usuario-nombre {
+                font-size: 20px;
             }
 
             .grupo-botones {
@@ -213,7 +225,7 @@
     </div>
     <div class="barra-usuario-acciones">
         <a href="{% url 'usuarios:tienda_home' %}" class="btn-barra">← Ver tienda</a>
-        <form action="{% url 'usuarios:logout' %}" method="post" class="form-inline" style="display:inline-block; margin:0;">
+        <form action="{% url 'usuarios:logout' %}" method="post" class="form-inline">
             {% csrf_token %}
             <button type="submit" class="btn-barra btn-salir">Cerrar sesión</button>
         </form>
@@ -242,6 +254,78 @@
         </div>
     </form>
 </div>
+
+<footer class="site-footer" id="footer">
+    <div class="footer-inner">
+      <div class="payment-methods">
+        <span class="pay-chip">Nequi</span>
+        <span class="pay-chip">Visa</span>
+        <span class="pay-chip">Mastercard</span>
+        <span class="pay-chip">PSE</span>
+        <span class="pay-chip">Mercado Pago</span>
+      </div>
+
+      <hr class="footer-divider" />
+
+      <div class="footer-columns">
+        <div class="footer-col brand-col">
+          <span class="logo footer-logo">
+            <span class="logo-mark">✦</span>
+            <span class="logo-word">nebula</span>
+          </span>
+          <p class="sic-note">Vigilado por la Superintendencia de Industria y Comercio</p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Información</h3>
+          <ul>
+            <li><a href="#">Términos y condiciones</a></li>
+            <li><a href="#">Políticas de privacidad</a></li>
+            <li><a href="#">Manual de atención para PQRs</a></li>
+            <li><a href="#">Políticas mayoristas</a></li>
+            <li><a href="#">Línea Ética</a></li>
+            <li><a href="#">Actividades legales y promociones</a></li>
+            <li><a href="#">Políticas Tiendas Físicas</a></li>
+            <li><a href="#">Términos Calendario 2026</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Enlaces de interés</h3>
+          <ul>
+            <li><a href="#">Quiénes somos</a></li>
+            <li><a href="#">Nuestras tiendas</a></li>
+            <li><a href="#">Trabaja con nosotros</a></li>
+            <li><a href="#">Preguntas frecuentes</a></li>
+            <li><a href="#">Contáctanos</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col contact-col">
+          <h3>Atención al cliente</h3>
+          <p class="schedule">
+            <strong>Horario:</strong><br />
+            Lunes a viernes de 7:30 a.m. a 5:00 p.m.<br />
+            Sábados de 8:00 a.m. a 12:30 p.m.<br />
+            No tenemos atención los días festivos
+          </p>
+          <p class="nit">NIT. 901.374.981-3</p>
+          <p class="write-us">
+            <strong>Escríbenos</strong><br />
+            <a href="mailto:servicioalcliente@nebulashop.com.co" class="email-link">servicioalcliente@nebulashop.com.co</a>
+          </p>
+          <p class="whatsapp">
+            Línea WhatsApp<br />
+            <strong>+57 301 2345678</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Colombia &copy; Nebula 2026. Derechos reservados. Desarrollado por Titamedia | Plataforma Vtex</p>
+      </div>
+    </div>
+  </footer>
 
 </body>
 </html>
