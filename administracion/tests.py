@@ -11,10 +11,7 @@ Qué cubre este archivo:
 6) GestionDisenoVistaTests       -> vista gestion_diseno (formulario del carrusel).
 7) PagosYPedidosVistaTests       -> pagos / pedidos / actualizar_estado_pedido.
 
-Cómo correr solo este archivo una vez copiado a administracion/tests.py:
-    python manage.py test administracion
-"""
-
+ 
 from decimal import Decimal
 
 from django.test import TestCase, RequestFactory
