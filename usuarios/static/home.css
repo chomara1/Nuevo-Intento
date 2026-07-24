@@ -313,7 +313,7 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(135deg, var(--purple-700), var(--purple-900));
+  background: linear-gradient(135deg, var(--slide-a, var(--purple-700)), var(--slide-b, var(--purple-900)));
   color: #fff;
   border-radius: var(--radius);
 }
