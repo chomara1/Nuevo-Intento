@@ -11,7 +11,7 @@ Qué cubre este archivo:
 6) GestionDisenoVistaTests       -> vista gestion_diseno (formulario del carrusel).
 7) PagosYPedidosVistaTests       -> pagos / pedidos / actualizar_estado_pedido.
 
- 
+ """
 from decimal import Decimal
 
 from django.test import TestCase, RequestFactory
