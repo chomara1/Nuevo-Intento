@@ -1,3 +1,4 @@
+import re
 import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,43 @@ def _cantidad_valida(valor_crudo):
     if cantidad < 1:
         cantidad = 1
     return cantidad
+
+
+# --- Patrones de validación para los datos de envío ---
+PATRON_NOMBRE = re.compile(r'^[A-Za-zÀ-ÿ\s]{3,60}$')
+PATRON_TELEFONO = re.compile(r'^3[0-9]{9}$')
+PATRON_CORREO = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+PATRON_DIRECCION = re.compile(r'^(?=.*[A-Za-zÀ-ÿ])(?=.*[0-9]).{6,120}$')
+PATRON_CIUDAD_DEPTO = re.compile(r'^[A-Za-zÀ-ÿ\s]{3,40}$')
+METODOS_PAGO_VALIDOS = {'nequi', 'tarjeta', 'pse', 'mercadopago', 'contraentrega'}
+
+
+def _validar_datos_envio(nombre, telefono, correo, direccion, departamento, ciudad, metodo_pago):
+    """Devuelve una lista de errores. Lista vacía = todo válido."""
+    errores = []
+
+    if not PATRON_NOMBRE.match(nombre):
+        errores.append('El nombre debe tener solo letras y al menos 3 caracteres.')
+
+    if not PATRON_TELEFONO.match(telefono):
+        errores.append('El teléfono debe ser un número celular colombiano válido (10 dígitos, inicia en 3).')
+
+    if not PATRON_CORREO.match(correo):
+        errores.append('El correo electrónico no es válido.')
+
+    if not PATRON_DIRECCION.match(direccion):
+        errores.append('La dirección debe incluir letras y números, con al menos 6 caracteres.')
+
+    if not PATRON_CIUDAD_DEPTO.match(departamento):
+        errores.append('El departamento debe tener solo letras y al menos 3 caracteres.')
+
+    if not PATRON_CIUDAD_DEPTO.match(ciudad):
+        errores.append('La ciudad debe tener solo letras y al menos 3 caracteres.')
+
+    if metodo_pago not in METODOS_PAGO_VALIDOS:
+        errores.append('Selecciona un método de pago válido.')
+
+    return errores
 
 
 @login_required
@@ -135,6 +173,12 @@ def confirmar_pago(request):
 
     if not all([nombre, telefono, correo, direccion, departamento, ciudad, metodo_pago]):
         messages.error(request, 'Por favor completa todos los datos, incluyendo el método de pago.')
+        return redirect('carrito:checkout')
+
+    errores = _validar_datos_envio(nombre, telefono, correo, direccion, departamento, ciudad, metodo_pago)
+    if errores:
+        for error in errores:
+            messages.error(request, error)
         return redirect('carrito:checkout')
 
     Envio = apps.get_model('rastreo', 'Envio')

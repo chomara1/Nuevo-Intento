@@ -279,13 +279,19 @@
 
                 <div class="campo">
                     <label for="nombre">Nombre completo *</label>
-                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Maria Gómez" required>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Maria Gómez"
+                           pattern="[A-Za-zÀ-ÿ\s]{3,60}"
+                           title="Escribe tu nombre completo, solo letras (mínimo 3 caracteres)"
+                           minlength="3" maxlength="60" required>
                 </div>
 
                 <div class="fila-doble">
                     <div class="campo">
                         <label for="telefono">Teléfono *</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="Ej: 3001234567" required>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Ej: 3001234567"
+                               pattern="3[0-9]{9}"
+                               title="Ingresa un número celular colombiano válido (10 dígitos, inicia en 3)"
+                               maxlength="10" required>
                     </div>
                     <div class="campo">
                         <label for="correo">Correo electrónico *</label>
@@ -295,17 +301,26 @@
 
                 <div class="campo">
                     <label for="direccion">Dirección de entrega *</label>
-                    <input type="text" id="direccion" name="direccion" placeholder="Calle, número, barrio" required>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle, número, barrio"
+                           pattern="(?=.*[A-Za-zÀ-ÿ])(?=.*[0-9]).{6,120}"
+                           title="Incluye calle/carrera con número y barrio (mínimo 6 caracteres, debe tener letras y números)"
+                           minlength="6" maxlength="120" required>
                 </div>
 
                 <div class="fila-doble">
                     <div class="campo">
                         <label for="departamento">Departamento *</label>
-                        <input type="text" id="departamento" name="departamento" placeholder="Ej: Cundinamarca" required>
+                        <input type="text" id="departamento" name="departamento" placeholder="Ej: Cundinamarca"
+                               pattern="[A-Za-zÀ-ÿ\s]{3,40}"
+                               title="Solo letras, mínimo 3 caracteres"
+                               minlength="3" maxlength="40" required>
                     </div>
                     <div class="campo">
                         <label for="ciudad">Ciudad *</label>
-                        <input type="text" id="ciudad" name="ciudad" placeholder="Ej: Bogotá" required>
+                        <input type="text" id="ciudad" name="ciudad" placeholder="Ej: Bogotá"
+                               pattern="[A-Za-zÀ-ÿ\s]{3,40}"
+                               title="Solo letras, mínimo 3 caracteres"
+                               minlength="3" maxlength="40" required>
                     </div>
                 </div>
 
