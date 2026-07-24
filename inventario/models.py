@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 from decimal import Decimal
 from django.core.validators import MinValueValidator
 
@@ -43,6 +45,14 @@ class Producto(models.Model):
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
+
+    HORAS_LIMITE_NUEVO = 5
+
+    @property
+    def es_nuevo(self):
+        """True mientras no hayan pasado más de 5 horas desde que se creó el producto."""
+        limite = self.fecha_creacion + timedelta(hours=self.HORAS_LIMITE_NUEVO)
+        return timezone.now() < limite
 
     def __str__(self):
         return self.nombre

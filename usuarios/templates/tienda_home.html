@@ -182,7 +182,7 @@
     {% for producto in productos %}
     <article class="product-card"
       data-category="{% if producto.categoria %}{{ producto.categoria.nombre|lower }}{% else %}otros{% endif %}"
-      data-new="true" data-store="true"
+      data-new="{{ producto.es_nuevo|yesno:'true,false' }}" data-store="true"
       data-title="{{ producto.nombre }}" data-ref="{{ producto.id }}" data-price="{{ producto.precio }}"
       data-desc="{{ producto.descripcion }}"
       data-agregar-url="{% url 'carrito:agregar_al_carrito' producto_id=producto.id %}"
@@ -194,10 +194,10 @@
         {% else %}
           <img src="https://via.placeholder.com/300x300/7B2D8E/FFFFFF?text={{ producto.nombre|urlencode }}" alt="{{ producto.nombre }}" loading="lazy">
         {% endif %}
-        <span class="badge-new">Nuevo</span>
+        {% if producto.es_nuevo %}<span class="badge-new">Nuevo</span>{% endif %}
         <div class="card-actions">
-          <button class="pill-btn btn-view" aria-label="Ver detalles" data-tooltip="Ver más detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
-          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false" data-tooltip="Agregar producto a favoritos"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+          <button class="pill-btn btn-view" aria-label="Ver detalles" data-tooltip="Click aquí para ver más detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false" data-tooltip="Click aquí para agregar producto a favoritos"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
         </div>
       </div>
       
