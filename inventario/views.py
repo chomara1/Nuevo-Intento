@@ -19,6 +19,9 @@ def dashboard_proveedor(request):
     #Productos de este proveedor
     mis_productos = Producto.objects.filter(proveedor=request.user)
 
+    # Productos activos con menos de 5 unidades disponibles: hay que reabastecer
+    productos_stock_bajo = mis_productos.filter(esta_activo=True, cantidad_disponible__lt=5)
+
     #ventas de productos de este proveedor
     ventas_proveedor = Envio.objects.filter(
         producto__proveedor=request.user
@@ -58,6 +61,7 @@ def dashboard_proveedor(request):
         'inventario': mis_productos,
         'ingresos_mes': ingresos_mes,
         'producto_mas_vendido': producto_mas_vendido,
+        'productos_stock_bajo': productos_stock_bajo,
     })
 
 

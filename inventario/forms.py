@@ -1,6 +1,9 @@
 from django import forms
 from .models import Producto
 
+CANTIDAD_MINIMA_PUBLICACION = 15
+
+
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
@@ -14,4 +17,18 @@ class ProductoForm(forms.ModelForm):
             'cantidad_disponible': 'Cantidad Inicial en Stock (Unidades)',
             'imagen': 'Foto del Producto',
         }
-        
+
+    def clean_cantidad_disponible(self):
+        cantidad = self.cleaned_data.get('cantidad_disponible')
+
+        # El mínimo de 15 unidades solo aplica al PUBLICAR un producto nuevo.
+        # Si se está editando uno existente (self.instance.pk ya existe),
+        # se permite bajar de 15 libremente (por ejemplo, por ventas).
+        es_producto_nuevo = self.instance.pk is None
+
+        if es_producto_nuevo and cantidad is not None and cantidad < CANTIDAD_MINIMA_PUBLICACION:
+            raise forms.ValidationError(
+                f'La cantidad mínima para publicar un producto nuevo es de {CANTIDAD_MINIMA_PUBLICACION} unidades.'
+            )
+
+        return cantidad
