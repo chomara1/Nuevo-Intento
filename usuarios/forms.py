@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect # Asegúrate de importar 'redirect'
-from django.contrib.auth.forms import UserCreationForm # O el formulario que uses
+from django.shortcuts import render, redirect 
+from django.contrib.auth.forms import UserCreationForm 
 
 def registro(request):
     if request.method == 'POST':

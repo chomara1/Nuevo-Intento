@@ -22,7 +22,7 @@ def _cantidad_valida(valor_crudo):
     return cantidad
 
 
-# --- Patrones de validación para los datos de envío ---
+#Patrones de validación para los datos de envío
 PATRON_NOMBRE = re.compile(r'^[A-Za-zÀ-ÿ\s]{3,60}$')
 PATRON_TELEFONO = re.compile(r'^3[0-9]{9}$')
 PATRON_CORREO = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -197,19 +197,12 @@ def confirmar_pago(request):
     Envio = apps.get_model('rastreo', 'Envio')
     HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
 
-    # ============================================================
-    # Validamos stock y descontamos inventario de forma segura.
-    # select_for_update() bloquea las filas de Producto involucradas
-    # mientras dura la transacción, para que si dos personas compran
-    # el mismo producto al mismo tiempo no se descuente stock de más
-    # ni se venda algo que ya no hay.
-    # ============================================================
+    # Validamos stock y descontamos inventario de forma segura-select_for_update() bloquea las filas de Producto involucradas mientras dura la transacción para que si dos personas compran el mismo producto al mismo tiempo no se descuente stock de más ni se venda algo que ya no hay
     with transaction.atomic():
         productos_y_cantidades = []
         errores_stock = []
 
         for item in items:
-            # item puede ser un dict (compra directa) o un ItemCarrito (carrito normal)
             producto_id_item = item['producto'].id if isinstance(item, dict) else item.producto_id
             cantidad_item = item['cantidad'] if isinstance(item, dict) else item.cantidad
 
@@ -232,7 +225,6 @@ def confirmar_pago(request):
 
         envios_creados = []
         for producto_bloqueado, cantidad_item in productos_y_cantidades:
-            # Descontamos el stock del proveedor
             producto_bloqueado.cantidad_disponible -= cantidad_item
             producto_bloqueado.save(update_fields=['cantidad_disponible'])
 

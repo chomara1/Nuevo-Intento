@@ -45,9 +45,7 @@ def rechazar_proveedor(request, perfil_id):
     return redirect('administracion:dashboard')
 
 
-# ==========================================
-# LISTA COMPLETA DE PROVEEDORES (aprobados y no aprobados)
-# ==========================================
+#Lista de proveedores(aprobados y no aprobados)
 @admin_required
 def lista_proveedores(request):
     Perfil = apps.get_model("usuarios", "Perfil")
@@ -59,8 +57,7 @@ def lista_proveedores(request):
         .select_related('usuario')
         .order_by('usuario__username')
     )
-
-    # Le agregamos a cada perfil cuántos productos tiene registrados
+    #Le agregamos a cada perfil cuántos productos tiene registrados
     for perfil in proveedores:
         perfil.total_productos = Producto.objects.filter(proveedor=perfil.usuario).count()
 
@@ -69,10 +66,8 @@ def lista_proveedores(request):
         'active': 'lista_proveedores',
     })
 
+#Mostrar los productos de cada proveedor
 
-# ==========================================
-# PRODUCTOS SUBIDOS POR UN PROVEEDOR ESPECÍFICO
-# ==========================================
 @admin_required
 def productos_proveedor(request, perfil_id):
     Perfil = apps.get_model("usuarios", "Perfil")
@@ -87,10 +82,7 @@ def productos_proveedor(request, perfil_id):
         'active': 'lista_proveedores',
     })
 
-
-# ==========================================
-# ELIMINAR CUENTA DE UN PROVEEDOR (y sus productos, en cascada)
-# ==========================================
+#Eliminar cuenta de proveedor y sus productos
 @admin_required
 def eliminar_proveedor(request, perfil_id):
     Perfil = apps.get_model("usuarios", "Perfil")
@@ -102,10 +94,7 @@ def eliminar_proveedor(request, perfil_id):
     messages.warning(request, f"La cuenta del proveedor '{nombre}' y todos sus productos fueron eliminados.")
     return redirect('administracion:lista_proveedores')
 
-
-# ==========================================
-# ELIMINAR UN PRODUCTO ESPECÍFICO DE CUALQUIER PROVEEDOR
-# ==========================================
+#Eliminar un producto especifico de un proveedor
 @admin_required
 def eliminar_producto_admin(request, producto_id):
     Producto = apps.get_model("inventario", "Producto")

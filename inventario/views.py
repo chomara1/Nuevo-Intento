@@ -15,19 +15,14 @@ def dashboard_proveedor(request):
         return redirect('login')
 
     Envio = apps.get_model('rastreo', 'Envio')
-
-    #Productos de este proveedor
     mis_productos = Producto.objects.filter(proveedor=request.user)
-
-    # Productos activos con menos de 5 unidades disponibles: hay que reabastecer
+    
     productos_stock_bajo = mis_productos.filter(esta_activo=True, cantidad_disponible__lt=5)
 
-    #ventas de productos de este proveedor
     ventas_proveedor = Envio.objects.filter(
         producto__proveedor=request.user
     ).exclude(estado_actual='cancelado')
 
-    # --- Ingresos del mes actual ---
     ahora = timezone.now()
     ventas_del_mes = ventas_proveedor.filter(
         fecha_creacion__year=ahora.year,
@@ -42,7 +37,6 @@ def dashboard_proveedor(request):
         )
     )['total']
 
-    # --- Producto más vendido del mes ---
     producto_mas_vendido = (
         ventas_proveedor
         .values('producto__id', 'producto__nombre')
@@ -63,7 +57,6 @@ def dashboard_proveedor(request):
         'producto_mas_vendido': producto_mas_vendido,
         'productos_stock_bajo': productos_stock_bajo,
     })
-
 
 @login_required
 def agregar_producto(request):
@@ -102,7 +95,6 @@ def editar_producto(request, producto_id):
 
 @login_required
 def eliminar_producto(request, producto_id):
-    """Elimina el producto por completo y de forma permanente."""
     producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
     nombre = producto.nombre
     producto.delete()
@@ -112,7 +104,6 @@ def eliminar_producto(request, producto_id):
 
 @login_required
 def cambiar_estado_producto(request, producto_id):
-    """Pausa o reactiva un producto sin borrarlo del inventario."""
     producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
     producto.esta_activo = not producto.esta_activo
     producto.save()

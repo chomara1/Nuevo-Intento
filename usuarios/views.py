@@ -7,10 +7,7 @@ from django.apps import apps
 from .models import Perfil
 from django.db.models import Case, When, Value, IntegerField
 
-# ==========================================
-# 1. TIENDA HOME (VISTA PÚBLICA)
-# ==========================================
-
+#Tienda_home
 def tienda_home(request):
     Producto = apps.get_model('inventario', 'Producto')
     DisenoSitio = apps.get_model('administracion', 'DisenoSitio')
@@ -29,9 +26,8 @@ def tienda_home(request):
         'productos': productos,
         'diseno': diseno,
     })
-# ==========================================
-# 2. INICIO DE SESIÓN (LOGIN)
-# ==========================================
+    
+#Login
 def login_view(request):
     if request.method == 'POST':
         correo_ingresado = request.POST.get('username')
@@ -51,10 +47,7 @@ def login_view(request):
 
     return render(request, 'registro.html')
 
-
-# ==========================================
-# 3. REDIRECCIÓN DINÁMICA POR ROL
-# ==========================================
+#Redirigir por rol
 def redirect_por_rol(user):
     rol = user.perfil.rol
 
@@ -65,10 +58,7 @@ def redirect_por_rol(user):
     else:  # CLIENTE
         return redirect('usuarios:tienda_home')
 
-
-# ==========================================
-# 4. REGISTRO DE USUARIOS NUEVOS
-# ==========================================
+#Registro de nuevos usuarios
 def registro(request):
     if request.method == 'POST':
         usuario = request.POST.get('username')
@@ -101,9 +91,7 @@ def registro(request):
 
     return render(request, 'registro.html')
 
-# ==========================================
-# 5. PERFIL DE USUARIO
-# ==========================================
+#Perfil del usuario
 @login_required(login_url='usuarios:login')
 def perfil(request):
     return render(request, 'perfil.html')

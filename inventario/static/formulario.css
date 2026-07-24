@@ -22,7 +22,7 @@ body {
   padding: 0;
 }
 
-/* Caja principal del formulario */
+/*Caja principal del formulario*/
 .contenedor-formulario {
   max-width: 550px;
   margin: 60px auto;
@@ -56,7 +56,6 @@ body {
   margin-bottom: 15px;
 }
 
-/* Estilos para los campos nativos que genera {{ form.as_p }} */
 form p {
   margin-bottom: 20px;
 }
@@ -97,7 +96,7 @@ form textarea {
   height: 110px;
 }
 
-/* Contenedor y diseño de botones */
+/*Contenedor y diseño de botones*/
 .grupo-botones {
   display: flex;
   gap: 15px;

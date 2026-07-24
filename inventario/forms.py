@@ -20,10 +20,6 @@ class ProductoForm(forms.ModelForm):
 
     def clean_cantidad_disponible(self):
         cantidad = self.cleaned_data.get('cantidad_disponible')
-
-        # El mínimo de 15 unidades solo aplica al PUBLICAR un producto nuevo.
-        # Si se está editando uno existente (self.instance.pk ya existe),
-        # se permite bajar de 15 libremente (por ejemplo, por ventas).
         es_producto_nuevo = self.instance.pk is None
 
         if es_producto_nuevo and cantidad is not None and cantidad < CANTIDAD_MINIMA_PUBLICACION:
