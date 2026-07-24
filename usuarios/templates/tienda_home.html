@@ -66,6 +66,15 @@
           
           <div class="user-navigation">
             {% if request.user.is_authenticated %}
+              {% if request.user.perfil.rol == 'PROVEEDOR' %}
+                <a href="{% url 'inventario:dashboard' %}" class="icon-btn" aria-label="Ir a mi panel de proveedor" style="text-decoration: none;">
+                  <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 500;">Mi panel</span>
+                </a>
+              {% elif request.user.perfil.rol == 'ADMIN' %}
+                <a href="{% url 'administracion:dashboard' %}" class="icon-btn" aria-label="Ir a mi panel de administración" style="text-decoration: none;">
+                  <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 500;">Mi panel</span>
+                </a>
+              {% endif %}
               <a href="{% url 'usuarios:perfil' %}" class="icon-btn" aria-label="Ver mi perfil" style="text-decoration: none;">
                 <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 500;">Hola, {{ request.user.username }}</span>
               </a>

@@ -5,9 +5,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Producto - Nebula</title>
-    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-300: #c9a8e0;
+            --purple-200: #e0d0f0;
+            --purple-100: #f3ebf9;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--purple-50);
+            color: var(--purple-900);
+            margin: 0;
+            padding: 0;
+        }
+
+        .barra-usuario {
+            background: var(--purple-900);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .barra-usuario-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .barra-usuario-nombre {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .barra-usuario-correo {
+            font-size: 12px;
+            opacity: 0.75;
+        }
+
+        .barra-usuario-acciones {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-barra {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-barra:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-salir {
+            font-family: inherit;
+        }
+
+        .contenedor-formulario {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px 40px;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .contenedor-formulario h2 {
+            margin: 0 0 6px;
+            color: var(--purple-800);
+            font-weight: 700;
+        }
+
+        .subtitulo {
+            color: var(--purple-600);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .separador {
+            border: none;
+            border-top: 2px solid var(--purple-100);
+            margin: 20px 0 24px;
+        }
+
+        .campos-formulario p {
+            margin-bottom: 16px;
+        }
+
+        .campos-formulario label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--purple-800);
+            margin-bottom: 6px;
+        }
+
+        .campos-formulario input,
+        .campos-formulario select,
+        .campos-formulario textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--purple-100);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--purple-900);
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .campos-formulario input:focus,
+        .campos-formulario select:focus,
+        .campos-formulario textarea:focus {
+            border-color: var(--purple-600);
+        }
+
+        .grupo-botones {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-primario {
+            flex: 1;
+            text-align: center;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--gradient-hero);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primario:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-cancelar {
+            flex: 1;
+            text-align: center;
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid var(--purple-200);
+            color: var(--purple-700);
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-cancelar:hover {
+            background: var(--purple-100);
+        }
+
+        @media (max-width: 640px) {
+            .contenedor-formulario {
+                margin: 20px 16px;
+                padding: 20px;
+            }
+
+            .barra-usuario {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .grupo-botones {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
+
+<div class="barra-usuario">
+    <div class="barra-usuario-info">
+        <span class="barra-usuario-nombre">👤 {{ user.get_full_name|default:user.username }}</span>
+        <span class="barra-usuario-correo">{{ user.email }}</span>
+    </div>
+    <div class="barra-usuario-acciones">
+        <a href="{% url 'usuarios:tienda_home' %}" class="btn-barra">← Ver tienda</a>
+        <form action="{% url 'usuarios:logout' %}" method="post" class="form-inline" style="display:inline-block; margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn-barra btn-salir">Cerrar sesión</button>
+        </form>
+    </div>
+</div>
 
 <div class="contenedor-formulario">
     <h2>Registrar Nuevo Producto</h2>
