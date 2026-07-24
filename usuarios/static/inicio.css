@@ -302,18 +302,18 @@ h2 {
 }
  
 /* Radio button custom, en vez del nativo del navegador */
-.input-box.tipo-cuenta input[type="radio"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--purple-400);
-  border-radius: 50%;
-  margin: 0;
-  flex-shrink: 0;
-  position: relative;
+.input-box.tipo-cuenta label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border: 2px solid var(--purple-800);
+  border-radius: calc(var(--radius) - 4px);
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  font-size: 0.92rem;
+  color: #fff;
+  background: var(--purple-900);
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
  
 .input-box.tipo-cuenta input[type="radio"]::after {
