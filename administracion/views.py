@@ -45,6 +45,79 @@ def rechazar_proveedor(request, perfil_id):
     return redirect('administracion:dashboard')
 
 
+# ==========================================
+# LISTA COMPLETA DE PROVEEDORES (aprobados y no aprobados)
+# ==========================================
+@admin_required
+def lista_proveedores(request):
+    Perfil = apps.get_model("usuarios", "Perfil")
+    Producto = apps.get_model("inventario", "Producto")
+
+    proveedores = (
+        Perfil.objects
+        .filter(rol='PROVEEDOR')
+        .select_related('usuario')
+        .order_by('usuario__username')
+    )
+
+    # Le agregamos a cada perfil cuántos productos tiene registrados
+    for perfil in proveedores:
+        perfil.total_productos = Producto.objects.filter(proveedor=perfil.usuario).count()
+
+    return render(request, 'administracion/lista_proveedores.html', {
+        'proveedores': proveedores,
+        'active': 'lista_proveedores',
+    })
+
+
+# ==========================================
+# PRODUCTOS SUBIDOS POR UN PROVEEDOR ESPECÍFICO
+# ==========================================
+@admin_required
+def productos_proveedor(request, perfil_id):
+    Perfil = apps.get_model("usuarios", "Perfil")
+    Producto = apps.get_model("inventario", "Producto")
+
+    perfil = get_object_or_404(Perfil, id=perfil_id, rol='PROVEEDOR')
+    productos = Producto.objects.filter(proveedor=perfil.usuario).order_by('-fecha_creacion')
+
+    return render(request, 'administracion/productos_proveedor.html', {
+        'perfil_proveedor': perfil,
+        'productos': productos,
+        'active': 'lista_proveedores',
+    })
+
+
+# ==========================================
+# ELIMINAR CUENTA DE UN PROVEEDOR (y sus productos, en cascada)
+# ==========================================
+@admin_required
+def eliminar_proveedor(request, perfil_id):
+    Perfil = apps.get_model("usuarios", "Perfil")
+
+    perfil = get_object_or_404(Perfil, id=perfil_id, rol='PROVEEDOR')
+    usuario = perfil.usuario
+    nombre = usuario.username
+    usuario.delete()  # borra el User, su Perfil y todos sus Producto en cascada
+    messages.warning(request, f"La cuenta del proveedor '{nombre}' y todos sus productos fueron eliminados.")
+    return redirect('administracion:lista_proveedores')
+
+
+# ==========================================
+# ELIMINAR UN PRODUCTO ESPECÍFICO DE CUALQUIER PROVEEDOR
+# ==========================================
+@admin_required
+def eliminar_producto_admin(request, producto_id):
+    Producto = apps.get_model("inventario", "Producto")
+
+    producto = get_object_or_404(Producto, id=producto_id)
+    perfil_id = producto.proveedor.perfil.id
+    nombre_producto = producto.nombre
+    producto.delete()
+    messages.success(request, f"El producto '{nombre_producto}' fue eliminado.")
+    return redirect('administracion:productos_proveedor', perfil_id=perfil_id)
+
+
 @admin_required
 def gestion_diseno(request):
     diseno = DisenoSitio.cargar()

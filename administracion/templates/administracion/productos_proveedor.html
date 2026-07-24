@@ -1,0 +1,53 @@
+{% extends 'administracion/base_admin.html' %}
+{% load humanize %}
+
+{% block titulo %}Productos de {{ perfil_proveedor.usuario.username }}{% endblock %}
+
+{% block contenido %}
+    <h1>📦 Productos de {{ perfil_proveedor.usuario.username }}</h1>
+    <p style="margin-bottom: 1.2rem;">
+        <a href="{% url 'administracion:lista_proveedores' %}">← Volver a todos los proveedores</a>
+    </p>
+
+    <section class="admin-card">
+        {% if productos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.categoria.nombre|default:"Sin categoría" }}</td>
+                        <td>${{ producto.precio|floatformat:0|intcomma }} COP</td>
+                        <td>{{ producto.cantidad_disponible }} uds</td>
+                        <td>
+                            {% if producto.esta_activo %}
+                                <span class="badge-ok">Activo</span>
+                            {% else %}
+                                <span class="badge-pend">Pausado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'administracion:eliminar_producto_admin' producto_id=producto.id %}" class="btn btn-reject"
+                               onclick="return confirm('¿Eliminar el producto {{ producto.nombre }} permanentemente?');">
+                                Eliminar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Este proveedor todavía no ha registrado productos.</p>
+        {% endif %}
+    </section>
+{% endblock %}

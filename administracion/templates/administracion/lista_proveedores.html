@@ -1,0 +1,48 @@
+{% extends 'administracion/base_admin.html' %}
+
+{% block titulo %}Todos los proveedores{% endblock %}
+
+{% block contenido %}
+    <h1>Todos los proveedores</h1>
+
+    <section class="admin-card">
+        {% if proveedores %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th>Productos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for perfil in proveedores %}
+                    <tr>
+                        <td>{{ perfil.usuario.username }}</td>
+                        <td>{{ perfil.usuario.email }}</td>
+                        <td>
+                            {% if perfil.aprobado %}
+                                <span class="badge-ok">Aprobado</span>
+                            {% else %}
+                                <span class="badge-pend">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ perfil.total_productos }}</td>
+                        <td>
+                            <a href="{% url 'administracion:productos_proveedor' perfil_id=perfil.id %}" class="btn btn-approve">Ver productos</a>
+                            <a href="{% url 'administracion:eliminar_proveedor' perfil_id=perfil.id %}" class="btn btn-reject"
+                               onclick="return confirm('¿Eliminar la cuenta de {{ perfil.usuario.username }}? Esto también borrará TODOS sus productos permanentemente.');">
+                                Eliminar proveedor
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aún no hay proveedores registrados.</p>
+        {% endif %}
+    </section>
+{% endblock %}
