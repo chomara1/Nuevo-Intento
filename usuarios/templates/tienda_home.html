@@ -66,12 +66,6 @@
           
           <div class="user-navigation">
             {% if request.user.is_authenticated %}
-              {% if request.user.perfil.rol == 'ADMIN' %}
-                <a href="{% url 'administracion:dashboard' %}" class="icon-btn" aria-label="Ir al panel de administración" style="text-decoration: none;">
-                  <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 600;">🛠 Panel Admin</span>
-                </a>
-              {% endif %}
-
               <a href="{% url 'usuarios:perfil' %}" class="icon-btn" aria-label="Ver mi perfil" style="text-decoration: none;">
                 <span style="font-size: 0.9rem; color: #b38cd9; font-weight: 500;">Hola, {{ request.user.username }}</span>
               </a>
@@ -152,20 +146,15 @@
  
   <div class="hero-track" id="heroTrack">
     <!-- Slide 1 -->
-    <article class="hero-slide {% if diseno.slide1_imagen %}has-image{% endif %}" style="--slide-a:{{ diseno.slide1_color_a }}; --slide-b:{{ diseno.slide1_color_b }};">
-      {% if diseno.slide1_imagen %}
-        <img class="hero-slide-img" src="{{ diseno.slide1_imagen.url }}" alt="">
-      {% endif %}
+    <article class="hero-slide" style="--slide-a:{{ diseno.slide1_color_a }}; --slide-b:{{ diseno.slide1_color_b }};">
       <p class="hero-eyebrow">Colección con licencia</p>
       <h1>{{ diseno.slide1_titulo }}</h1>
       <p class="hero-copy">{{ diseno.slide1_texto }}</p>
       <a href="#grid" class="hero-cta">Ver catálogo</a>
     </article>
+    
     <!-- Slide 2 -->
-    <article class="hero-slide {% if diseno.slide2_imagen %}has-image{% endif %}" style="--slide-a:{{ diseno.slide2_color_a }}; --slide-b:{{ diseno.slide2_color_b }};">
-      {% if diseno.slide2_imagen %}
-        <img class="hero-slide-img" src="{{ diseno.slide2_imagen.url }}" alt="">
-      {% endif %}
+    <article class="hero-slide" style="--slide-a:{{ diseno.slide2_color_a }}; --slide-b:{{ diseno.slide2_color_b }};">
       <p class="hero-eyebrow">Ofertas de temporada</p>
       <h1>{{ diseno.slide2_titulo }}</h1>
       <p class="hero-copy">{{ diseno.slide2_texto }}</p>
@@ -173,10 +162,7 @@
     </article>
  
     <!-- Slide 3 -->
-    <article class="hero-slide {% if diseno.slide3_imagen %}has-image{% endif %}" style="--slide-a:{{ diseno.slide3_color_a }}; --slide-b:{{ diseno.slide3_color_b }};">
-      {% if diseno.slide3_imagen %}
-        <img class="hero-slide-img" src="{{ diseno.slide3_imagen.url }}" alt="">
-      {% endif %}
+    <article class="hero-slide" style="--slide-a:{{ diseno.slide3_color_a }}; --slide-b:{{ diseno.slide3_color_b }};">
       <p class="hero-eyebrow">Recién llegado</p>
       <h1>{{ diseno.slide3_titulo }}</h1>
       <p class="hero-copy">{{ diseno.slide3_texto }}</p>
@@ -210,8 +196,8 @@
         {% endif %}
         <span class="badge-new">Nuevo</span>
         <div class="card-actions">
-          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
-          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+          <button class="pill-btn btn-view" aria-label="Ver detalles" data-tooltip="Click aquí para ver más detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false" data-tooltip="Click aquí para agregar producto a favoritos"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
         </div>
       </div>
       
@@ -219,9 +205,10 @@
         <span class="product-category">{% if producto.categoria %}{{ producto.categoria.nombre }}{% else %}Sin categoría{% endif %}</span>
         <h2 class="product-title">{{ producto.nombre }}</h2>
         <span class="product-ref">{{ producto.marca|default:"" }}</span>
+        <span class="product-vendedor">Subido por {{ producto.proveedor.username }}</span>
         <div class="product-footer">
           <span class="product-price">$ {{ producto.precio|floatformat:0|intcomma }} COP</span>
-          <button class="btn-add btn-add-real" data-url="{% url 'carrito:agregar_al_carrito' producto_id=producto.id %}">Agregar</button>
+          <button class="btn-add btn-add-real" data-url="{% url 'carrito:agregar_al_carrito' producto_id=producto.id %}">Agregar al carrito</button>
         </div>
       </div>
     </article>
