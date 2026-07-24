@@ -31,3 +31,20 @@ if (signupTab) {
         loginForm.classList.remove('active');
     });
 }
+
+const radioProveedor = document.getElementById('radioProveedor');
+const radioCliente = document.getElementById('radioCliente');
+
+if (radioProveedor && radioCliente) {
+    radioProveedor.addEventListener('change', () => {
+        const confirmado = window.confirm(
+            '¿Estás seguro de que quieres registrarte como proveedor? ' +
+            'Tu cuenta quedará pendiente de aprobación por un administrador.'
+        );
+
+        if (!confirmado) {
+            // Si cancela, regresa la selección a "Cliente"
+            radioCliente.checked = true;
+        }
+    });
+}

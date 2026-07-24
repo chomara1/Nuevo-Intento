@@ -28,5 +28,12 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+  window.NEBULA_URLS = {
+    login: "{% url 'usuarios:login' %}",
+    tiendaHome: "{% url 'usuarios:tienda_home' %}",
+    misEnvios: "{% url 'rastreo:mis_envios' %}"
+  };
+</script>
 <script src="{% static 'perfil.js' %}"></script>
 {% endblock %}
