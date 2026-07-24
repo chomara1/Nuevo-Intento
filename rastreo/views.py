@@ -22,8 +22,7 @@ def actualizar_estado(request, envio_id):
     if request.user.perfil.rol != 'PROVEEDOR':
         raise PermissionDenied
 
-    # Solo se puede actualizar un envío si el producto pertenece a este proveedor
-    envio = get_object_or_404(Envio, id=envio_id, producto__proveedor=request.user)
+    envio = get_object_or_404(Envio, id=envio_id, producto__proveedor=request.user) # Solo se puede actualizar un envío si el producto pertenece a este proveedor
 
     if request.method == 'POST':
         nuevo_estado = request.POST.get('estado')

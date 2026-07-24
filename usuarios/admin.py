@@ -6,6 +6,6 @@ from .models import Perfil
 class PerfilAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'rol', 'aprobado', 'telefono', 'ciudad')
     list_filter = ('rol', 'aprobado')
-    list_editable = ('aprobado',)  # permite marcar/desmarcar aprobado directo desde la lista
+    list_editable = ('aprobado',)  
     search_fields = ('usuario__username', 'usuario__email')
     autocomplete_fields = ['usuario']

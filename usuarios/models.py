@@ -17,13 +17,9 @@ class Perfil(models.Model):
     aprobado = models.BooleanField(default=True)
  
     def save(self, *args, **kwargs):
-        # Solo se fuerza aprobado=False la PRIMERA vez que se crea
-        # un perfil de tipo PROVEEDOR 
-        # Así, si el admin lo aprueba después y vuelve a guardar, no se
-        # le pisa el valor.
         if self.pk is None and self.rol == 'PROVEEDOR':
             self.aprobado = False
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs) #evita que un administrador tenga que estar aprobando de nuevo al proveedor cada vez que este actualice o guarde algo en su perfil más adelante
  
     def __str__(self):
         return f"{self.usuario.username} - {self.get_rol_display()}"

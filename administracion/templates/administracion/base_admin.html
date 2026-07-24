@@ -19,11 +19,11 @@
             <p class="admin-role">Administrador</p>
         </div>
         <nav class="admin-nav">
-            <a href="{% url 'administracion:dashboard' %}" class="{% if active == 'proveedores' %}active{% endif %}">🔒 Proveedores</a>
-            <a href="{% url 'administracion:lista_proveedores' %}" class="{% if active == 'lista_proveedores' %}active{% endif %}">👥 Todos los proveedores</a>
-            <a href="{% url 'administracion:pagos' %}" class="{% if active == 'pagos' %}active{% endif %}">💳 Registro de pagos</a>
-            <a href="{% url 'administracion:pedidos' %}" class="{% if active == 'pedidos' %}active{% endif %}">📦 Estado de pedidos</a>
-            <a href="{% url 'administracion:gestion_diseno' %}" class="{% if active == 'diseno' %}active{% endif %}">🎨 Editar página</a>
+            <a href="{% url 'administracion:dashboard' %}" class="{% if active == 'proveedores' %}active{% endif %}">Proveedores en espera</a>
+            <a href="{% url 'administracion:lista_proveedores' %}" class="{% if active == 'lista_proveedores' %}active{% endif %}">Todos los proveedores</a>
+            <a href="{% url 'administracion:pagos' %}" class="{% if active == 'pagos' %}active{% endif %}">Registro de pagos</a>
+            <a href="{% url 'administracion:pedidos' %}" class="{% if active == 'pedidos' %}active{% endif %}">Estado de pedidos</a>
+            <a href="{% url 'administracion:gestion_diseno' %}" class="{% if active == 'diseno' %}active{% endif %}">Editar página</a>
             <hr>
             <a href="{% url 'usuarios:tienda_home' %}" target="_blank" rel="noopener">↗ Ver tienda pública</a>
         </nav>

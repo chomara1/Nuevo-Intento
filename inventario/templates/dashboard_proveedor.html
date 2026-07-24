@@ -371,7 +371,7 @@
 
 <div class="barra-usuario">
     <div class="barra-usuario-info">
-        <span class="barra-usuario-nombre">👤 {{ user.get_full_name|default:user.username }}</span>
+        <span class="barra-usuario-nombre">{{ user.get_full_name|default:user.username }}</span>
         <span class="barra-usuario-correo">{{ user.email }}</span>
     </div>
     <div class="barra-usuario-acciones">
