@@ -73,7 +73,7 @@ def agregar_producto(request):
             producto.proveedor = request.user
             producto.save()
             messages.success(request, '¡Producto añadido con éxito al inventario!')
-            return redirect('dashboard')
+            return redirect('inventario:dashboard')
     else:
         form = ProductoForm()
 
@@ -89,7 +89,7 @@ def editar_producto(request, producto_id):
         if form.is_valid():
             form.save()
             messages.success(request, f"'{producto.nombre}' fue actualizado.")
-            return redirect('dashboard')
+            return redirect('inventario:dashboard')
     else:
         form = ProductoForm(instance=producto)
 
@@ -98,8 +98,24 @@ def editar_producto(request, producto_id):
 
 @login_required
 def eliminar_producto(request, producto_id):
+    """Elimina el producto por completo y de forma permanente."""
     producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
-    producto.esta_activo = False
+    nombre = producto.nombre
+    producto.delete()
+    messages.success(request, f"'{nombre}' fue eliminado permanentemente.")
+    return redirect('inventario:dashboard')
+
+
+@login_required
+def cambiar_estado_producto(request, producto_id):
+    """Pausa o reactiva un producto sin borrarlo del inventario."""
+    producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
+    producto.esta_activo = not producto.esta_activo
     producto.save()
-    messages.success(request, f"'{producto.nombre}' fue eliminado.")
-    return redirect('dashboard')
+
+    if producto.esta_activo:
+        messages.success(request, f"'{producto.nombre}' fue reactivado.")
+    else:
+        messages.success(request, f"'{producto.nombre}' fue pausado.")
+
+    return redirect('inventario:dashboard')

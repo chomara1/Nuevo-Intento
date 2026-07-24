@@ -281,7 +281,7 @@
 
     <div class="header-flex">
         <h2>Mi Inventario de Productos</h2>
-        <a href="{% url 'agregar' %}" class="btn-oscuro">+ Añadir Producto</a>
+        <a href="{% url 'inventario:agregar' %}" class="btn-oscuro">+ Añadir Producto</a>
     </div>
 
     {% if messages %}
@@ -336,17 +336,20 @@
                 </td>
 
                 <td>
-                    {% if item.esta_activo %}
-                        <span class="badge badge-activo">Activo</span>
-                    {% else %}
-                        <span class="badge badge-pausado">Pausado</span>
-                    {% endif %}
+                    <form action="{% url 'inventario:cambiar_estado' item.id %}" method="post" class="form-inline">
+                        {% csrf_token %}
+                        {% if item.esta_activo %}
+                            <button type="submit" class="badge badge-activo" style="border:none; cursor:pointer;">Activo</button>
+                        {% else %}
+                            <button type="submit" class="badge badge-pausado" style="border:none; cursor:pointer;">Pausado</button>
+                        {% endif %}
+                    </form>
                 </td>
 
                 <td class="acciones">
-                    <a href="{% url 'editar' item.id %}" class="btn-editar">Editar</a>
-                    <form action="{% url 'eliminar_producto' item.id %}" method="post"
-                          onsubmit="return confirm('¿Eliminar {{ item.nombre }}?');" class="form-inline">
+                    <a href="{% url 'inventario:editar' item.id %}" class="btn-editar">Editar</a>
+                    <form action="{% url 'inventario:eliminar_producto' item.id %}" method="post"
+                          onsubmit="return confirm('¿Eliminar {{ item.nombre }} permanentemente? Esta acción no se puede deshacer.');" class="form-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn-eliminar">Eliminar</button>
                     </form>

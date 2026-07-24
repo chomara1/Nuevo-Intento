@@ -52,7 +52,7 @@ def redirect_por_rol(user):
     rol = user.perfil.rol
 
     if rol == 'PROVEEDOR':
-        return redirect('usuarios:dashboard')
+        return redirect('inventario:dashboard')
     elif rol == 'ADMIN':
         return redirect('administracion:dashboard')
     else:  # CLIENTE
@@ -98,14 +98,3 @@ def registro(request):
 @login_required(login_url='usuarios:login')
 def perfil(request):
     return render(request, 'perfil.html')
-
-
-# ==========================================
-# 6. DASHBOARD / PANEL DEL PROVEEDOR
-# ==========================================
-@login_required(login_url='usuarios:login')
-def dashboard(request):
-    if request.user.perfil.rol != 'PROVEEDOR':
-        return redirect('usuarios:tienda_home')
-
-    return render(request, 'dashboard_proveedor.html')
