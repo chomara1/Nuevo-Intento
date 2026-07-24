@@ -69,13 +69,16 @@ def registro(request):
         clave = request.POST.get('password')
         tipo_cuenta = request.POST.get('tipo_cuenta', 'CLIENTE')  # 'CLIENTE' o 'PROVEEDOR'
 
+        if not (5 <= len(clave) <= 16):
+            return render(request, 'registro.html', {
+                'error': 'La contraseña debe tener entre 5 y 16 caracteres.'
+            })
+
         if User.objects.filter(username=usuario).exists() or User.objects.filter(email=correo).exists():
             return render(request, 'registro.html', {'error': 'El usuario o correo ya existen.'})
 
         nuevo_usuario = User.objects.create_user(username=usuario, email=correo, password=clave)
 
-        # La señal post_save ya creó el Perfil con rol='CLIENTE' por defecto.
-        # Aquí lo ajustamos según lo que eligió en el formulario.
         perfil_obj = nuevo_usuario.perfil
         perfil_obj.rol = tipo_cuenta
         if tipo_cuenta == 'PROVEEDOR':
@@ -90,7 +93,6 @@ def registro(request):
         return redirect('usuarios:tienda_home')
 
     return render(request, 'registro.html')
-
 
 # ==========================================
 # 5. PERFIL DE USUARIO
