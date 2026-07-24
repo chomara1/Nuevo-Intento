@@ -9,6 +9,7 @@ from .models import Carrito, ItemCarrito
 
 
 COSTO_ENVIO = 7000
+MONTO_MINIMO_ENVIO_GRATIS = 100000
 
 
 def _cantidad_valida(valor_crudo):
@@ -140,12 +141,16 @@ def checkout(request):
 
         subtotal = carrito.total()
 
-    total = subtotal + COSTO_ENVIO
+    envio_gratis = subtotal >= MONTO_MINIMO_ENVIO_GRATIS
+    costo_envio = 0 if envio_gratis else COSTO_ENVIO
+    total = subtotal + costo_envio
 
     return render(request, 'checkout.html', {
         'items': items,
         'subtotal': subtotal,
-        'costo_envio': COSTO_ENVIO,
+        'costo_envio': costo_envio,
+        'envio_gratis': envio_gratis,
+        'monto_minimo_envio_gratis': MONTO_MINIMO_ENVIO_GRATIS,
         'total': total,
         'compra_directa': bool(compra_directa),
     })
@@ -192,6 +197,13 @@ def confirmar_pago(request):
     Envio = apps.get_model('rastreo', 'Envio')
     HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
 
+    # ============================================================
+    # Validamos stock y descontamos inventario de forma segura.
+    # select_for_update() bloquea las filas de Producto involucradas
+    # mientras dura la transacción, para que si dos personas compran
+    # el mismo producto al mismo tiempo no se descuente stock de más
+    # ni se venda algo que ya no hay.
+    # ============================================================
     with transaction.atomic():
         productos_y_cantidades = []
         errores_stock = []

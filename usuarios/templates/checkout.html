@@ -84,6 +84,12 @@
         color: var(--purple-700);
     }
 
+    .aviso-envio-gratis {
+        font-size: 0.8rem;
+        color: var(--purple-600);
+        margin: 6px 0 0;
+    }
+
     .resumen-total {
         display: flex;
         justify-content: space-between;
@@ -258,8 +264,17 @@
             {% endfor %}
             <div class="resumen-envio">
                 <span>Envío</span>
-                <span>${{ costo_envio|intcomma }} COP</span>
+                {% if envio_gratis %}
+                    <span>🎉 Gratis</span>
+                {% else %}
+                    <span>${{ costo_envio|intcomma }} COP</span>
+                {% endif %}
             </div>
+            {% if not envio_gratis %}
+                <p class="aviso-envio-gratis">
+                    Compra ${{ monto_minimo_envio_gratis|intcomma }} COP o más y el envío es gratis.
+                </p>
+            {% endif %}
             <div class="resumen-total">
                 <span>Total</span>
                 <span>${{ total|intcomma }} COP</span>
