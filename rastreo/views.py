@@ -37,5 +37,5 @@ def actualizar_estado(request, envio_id):
         envio.estado_actual = nuevo_estado
         envio.save()
         HistorialEstado.objects.create(envio=envio, estado=nuevo_estado, comentario=comentario)
-        return redirect('dashboard')
+        return redirect('inventario:dashboard')
     return render(request, 'actualizar_estado.html', {'envio': envio})

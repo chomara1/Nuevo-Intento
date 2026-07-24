@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.apps import apps
+from django.db import transaction
 from .models import Carrito, ItemCarrito
 
 
@@ -148,10 +149,10 @@ def confirmar_pago(request):
     if request.method != 'POST':
         return redirect('carrito:checkout')
 
+    Producto = apps.get_model('inventario', 'Producto')
     compra_directa = request.session.get('compra_directa')
 
     if compra_directa:
-        Producto = apps.get_model('inventario', 'Producto')
         producto = get_object_or_404(Producto, id=compra_directa['producto_id'])
         items = [{'producto': producto, 'cantidad': compra_directa['cantidad']}]
     else:
@@ -184,34 +185,67 @@ def confirmar_pago(request):
     Envio = apps.get_model('rastreo', 'Envio')
     HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
 
-    envios_creados = []
-    for item in items:
-        # item puede ser un dict (compra directa) o un ItemCarrito (carrito normal)
-        producto_item = item['producto'] if isinstance(item, dict) else item.producto
-        cantidad_item = item['cantidad'] if isinstance(item, dict) else item.cantidad
+    # ============================================================
+    # Validamos stock y descontamos inventario de forma segura.
+    # select_for_update() bloquea las filas de Producto involucradas
+    # mientras dura la transacción, para que si dos personas compran
+    # el mismo producto al mismo tiempo no se descuente stock de más
+    # ni se venda algo que ya no hay.
+    # ============================================================
+    with transaction.atomic():
+        productos_y_cantidades = []
+        errores_stock = []
 
-        numero_guia = str(uuid.uuid4())[:8].upper()
-        envio = Envio.objects.create(
-            cliente=request.user,
-            producto=producto_item,
-            numero_guia=numero_guia,
-            cantidad=cantidad_item,
-            precio_unitario=producto_item.precio,
-            nombre_destinatario=nombre,
-            telefono=telefono,
-            correo=correo,
-            direccion=direccion,
-            departamento=departamento,
-            ciudad=ciudad,
-            metodo_pago=metodo_pago,
-        )
-        HistorialEstado.objects.create(envio=envio, estado='preparando', comentario='Pago confirmado (simulado)')
-        envios_creados.append(envio)
+        for item in items:
+            # item puede ser un dict (compra directa) o un ItemCarrito (carrito normal)
+            producto_id_item = item['producto'].id if isinstance(item, dict) else item.producto_id
+            cantidad_item = item['cantidad'] if isinstance(item, dict) else item.cantidad
 
-    if compra_directa:
-        del request.session['compra_directa']
-    else:
-        items.delete()  # vacía el carrito
+            producto_bloqueado = Producto.objects.select_for_update().get(id=producto_id_item)
+
+            if not producto_bloqueado.esta_activo:
+                errores_stock.append(f"'{producto_bloqueado.nombre}' ya no está disponible.")
+            elif producto_bloqueado.cantidad_disponible < cantidad_item:
+                errores_stock.append(
+                    f"Solo quedan {producto_bloqueado.cantidad_disponible} unidad(es) de "
+                    f"'{producto_bloqueado.nombre}' (pediste {cantidad_item})."
+                )
+
+            productos_y_cantidades.append((producto_bloqueado, cantidad_item))
+
+        if errores_stock:
+            for error in errores_stock:
+                messages.error(request, error)
+            return redirect('carrito:checkout')
+
+        envios_creados = []
+        for producto_bloqueado, cantidad_item in productos_y_cantidades:
+            # Descontamos el stock del proveedor
+            producto_bloqueado.cantidad_disponible -= cantidad_item
+            producto_bloqueado.save(update_fields=['cantidad_disponible'])
+
+            numero_guia = str(uuid.uuid4())[:8].upper()
+            envio = Envio.objects.create(
+                cliente=request.user,
+                producto=producto_bloqueado,
+                numero_guia=numero_guia,
+                cantidad=cantidad_item,
+                precio_unitario=producto_bloqueado.precio,
+                nombre_destinatario=nombre,
+                telefono=telefono,
+                correo=correo,
+                direccion=direccion,
+                departamento=departamento,
+                ciudad=ciudad,
+                metodo_pago=metodo_pago,
+            )
+            HistorialEstado.objects.create(envio=envio, estado='preparando', comentario='Pago confirmado (simulado)')
+            envios_creados.append(envio)
+
+        if compra_directa:
+            del request.session['compra_directa']
+        else:
+            items.delete()  # vacía el carrito
 
     messages.success(request, f'¡Pago exitoso! Se generaron {len(envios_creados)} envío(s).')
     return redirect('rastreo:mis_envios')
