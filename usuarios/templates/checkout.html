@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Finalizar pedido · Nebula{% endblock %}
 
@@ -75,11 +76,20 @@
         border-bottom: 1px solid var(--purple-100);
     }
 
+    .resumen-envio {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 0.9rem;
+        color: var(--purple-700);
+    }
+
     .resumen-total {
         display: flex;
         justify-content: space-between;
         padding-top: 12px;
         margin-top: 8px;
+        border-top: 2px solid var(--purple-100);
         font-weight: 700;
         font-size: 1.1rem;
         color: var(--purple-900);
@@ -243,12 +253,16 @@
             {% for item in items %}
                 <div class="resumen-item">
                     <span>{{ item.cantidad }} x {{ item.producto.nombre }}</span>
-                    <span>${{ item.subtotal }} COP</span>
+                    <span>${{ item.subtotal|intcomma }} COP</span>
                 </div>
             {% endfor %}
+            <div class="resumen-envio">
+                <span>Envío</span>
+                <span>${{ costo_envio|intcomma }} COP</span>
+            </div>
             <div class="resumen-total">
                 <span>Total</span>
-                <span>${{ total }} COP</span>
+                <span>${{ total|intcomma }} COP</span>
             </div>
         </div>
 

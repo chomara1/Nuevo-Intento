@@ -8,6 +8,9 @@ from django.db import transaction
 from .models import Carrito, ItemCarrito
 
 
+COSTO_ENVIO = 7000
+
+
 def _cantidad_valida(valor_crudo):
     try:
         cantidad = int(valor_crudo)
@@ -126,7 +129,7 @@ def checkout(request):
             'cantidad': cantidad,
             'subtotal': producto.precio * cantidad,
         }]
-        total = producto.precio * cantidad
+        subtotal = producto.precio * cantidad
     else:
         carrito, _ = Carrito.objects.get_or_create(cliente=request.user)
         items = carrito.items.all()
@@ -135,10 +138,14 @@ def checkout(request):
             messages.warning(request, 'Tu carrito está vacío.')
             return redirect('carrito:ver_carrito')
 
-        total = carrito.total()
+        subtotal = carrito.total()
+
+    total = subtotal + COSTO_ENVIO
 
     return render(request, 'checkout.html', {
         'items': items,
+        'subtotal': subtotal,
+        'costo_envio': COSTO_ENVIO,
         'total': total,
         'compra_directa': bool(compra_directa),
     })
@@ -185,13 +192,6 @@ def confirmar_pago(request):
     Envio = apps.get_model('rastreo', 'Envio')
     HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
 
-    # ============================================================
-    # Validamos stock y descontamos inventario de forma segura.
-    # select_for_update() bloquea las filas de Producto involucradas
-    # mientras dura la transacción, para que si dos personas compran
-    # el mismo producto al mismo tiempo no se descuente stock de más
-    # ni se venda algo que ya no hay.
-    # ============================================================
     with transaction.atomic():
         productos_y_cantidades = []
         errores_stock = []
