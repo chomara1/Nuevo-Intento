@@ -9,6 +9,7 @@ from .models import Perfil
 # ==========================================
 # 1. TIENDA HOME (VISTA PÚBLICA)
 # ==========================================
+
 def tienda_home(request):
     Producto = apps.get_model('inventario', 'Producto')
     DisenoSitio = apps.get_model('administracion', 'DisenoSitio')

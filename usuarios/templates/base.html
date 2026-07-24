@@ -133,10 +133,6 @@
           <li><a href="{% url 'usuarios:tienda_home' %}" data-nav="inicio">Inicio</a></li>
           <li><a href="{% url 'usuarios:tienda_home' %}#grid" data-nav="nueva">Nueva Colección</a></li>
           <li><a href="/rastreo/mis-envios/">Mis pedidos</a></li>
-
-          {% if request.user.is_authenticated and request.user.perfil.rol == 'PROVEEDOR' %}
-            <li><a href="{% url 'inventario:dashboard' %}">Panel de proveedor</a></li>
-          {% endif %}
         </ul>
       </nav>
     </div>

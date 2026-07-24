@@ -53,7 +53,7 @@ img {
 
 /* ===== HEADER ===== */
 .site-header {
-  background: var(--purple-900);
+  background: var(--purple-800);
   color: #f3ebf9;
   position: sticky;
   top: 0;
@@ -61,15 +61,15 @@ img {
   box-shadow: 0 4px 16px rgba(45, 27, 78, 0.25);
 }
 .header-inner {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0.8rem 1.5rem;
+  padding: 0.9rem 1.8rem;
 }
 .top-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.2rem;
   flex-wrap: wrap;
 }
 .logo {
@@ -78,12 +78,14 @@ img {
   gap: 0.4rem;
   font-family: 'Baloo 2', cursive;
   font-weight: 800;
-  font-size: 1.6rem;
+  font-size: 2rem;
   letter-spacing: -0.5px;
   color: #fff;
 }
 .logo-mark svg {
   fill: #b38cd9;
+  width: 24px;
+  height: 24px;
 }
 .logo-word {
   background: linear-gradient(135deg, #d4b0e6, #b38cd9);
@@ -93,15 +95,16 @@ img {
 }
 
 .search-bar {
-  flex: 1 1 240px;
+  flex: 1 1 900px;
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 40px;
-  padding: 0.3rem 1rem;
+  padding: 0.5rem 1.4rem;
   border: 1px solid rgba(179, 140, 217, 0.3);
   transition: 0.2s;
-  max-width: 420px;
+  max-width: 1300px;
+  margin: 0 1.5rem;
 }
 .search-bar:focus-within {
   border-color: #b38cd9;
@@ -110,14 +113,16 @@ img {
 .search-icon {
   color: #b38cd9;
   flex-shrink: 0;
+  width: 19px;
+  height: 19px;
 }
 .search-bar input {
   background: transparent;
   border: none;
-  padding: 0.4rem 0.6rem;
+  padding: 0.4rem 0.7rem;
   flex: 1;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   outline: none;
 }
 .search-bar input::placeholder {
@@ -125,7 +130,7 @@ img {
 }
 .search-clear {
   color: #b38cd9;
-  padding: 0.2rem;
+  padding: 0.3rem;
   display: flex;
 }
 .search-clear[hidden] {
@@ -135,18 +140,22 @@ img {
 .user-actions {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.4rem;
 }
 .icon-btn {
   display: inline-flex;
   align-items: center;
   position: relative;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   color: #d4b0e6;
   transition: 0.2s;
+}
+.icon-btn svg {
+  width: 21px;
+  height: 21px;
 }
 .icon-btn:hover {
   background: rgba(179, 140, 217, 0.2);
@@ -154,14 +163,14 @@ img {
 }
 .icon-count {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 4px;
+  right: 4px;
   background: #9b59b6;
   color: #fff;
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -171,6 +180,9 @@ img {
 .icon-count[hidden] {
   display: none;
 }
+.user-navigation .icon-btn span {
+  font-size: 0.9rem !important;
+}
 .mobile-toggle {
   display: none;
 }
@@ -179,26 +191,33 @@ img {
 .bottom-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1.5rem;
   margin-top: 0.5rem;
   flex-wrap: wrap;
   border-top: 1px solid rgba(179, 140, 217, 0.2);
   padding-top: 0.5rem;
+  position: relative;
 }
 .categories-container {
-  position: relative;
+  position: absolute;
+  left: 0;
 }
 .categories-btn {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1.1rem;
   border-radius: 30px;
   background: rgba(179, 140, 217, 0.15);
   color: #d4b0e6;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 1rem;
   transition: 0.2s;
+}
+.categories-btn svg {
+  width: 18px;
+  height: 18px;
 }
 .categories-btn:hover {
   background: rgba(179, 140, 217, 0.3);
@@ -252,15 +271,15 @@ img {
 
 .nav-links {
   display: flex;
-  gap: 0.2rem;
+  gap: 0.3rem;
   flex-wrap: wrap;
 }
 .nav-links li a {
   display: block;
-  padding: 0.3rem 1rem;
+  padding: 0.4rem 1.1rem;
   border-radius: 30px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #b38cd9;
   transition: 0.2s;
 }
@@ -276,7 +295,7 @@ img {
 /* ===== HERO ===== */
 .hero {
   position: relative;
-  max-width: 1280px;
+  max-width: 100%;
   margin: 1.5rem auto 0;
   padding: 0 1.5rem;
   overflow: hidden;
@@ -387,7 +406,7 @@ img {
 
 /* ===== TOOLBAR ===== */
 .toolbar {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 1.5rem auto 0;
   padding: 0 1.5rem;
   display: flex;
@@ -428,9 +447,8 @@ img {
 }
 
 /* ===== PRODUCT GRID ===== */
-/* 4 productos por hilera en escritorio */
 .product-grid {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 1.5rem auto 2rem;
   padding: 0 1.5rem;
   display: grid;
@@ -440,7 +458,7 @@ img {
 
 .product-card {
   background: #fff;
-  border-radius: var(--radius);
+  border-radius: 14px;
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: 0.2s;
@@ -456,21 +474,22 @@ img {
 
 .product-media {
   position: relative;
-  background: var(--purple-100);
-  padding: 1.5rem;
+  background: #fff;
+  padding: 0.4rem 0.4rem 0.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 260px;
-  background: linear-gradient(135deg, var(--purple-100), var(--purple-200));
+  border-bottom: 1px solid var(--purple-100);
 }
 .product-media img {
-  max-height: 220px;
+  max-height: 250px;
+  max-width: 100%;
   object-fit: contain;
   border-radius: 8px;
 }
 .product-media .product-icon {
-  display: none; /* fallback, se oculta si hay img */
+  display: none;
 }
 .product-media .badge-new {
   position: absolute;
@@ -518,14 +537,62 @@ img {
   border-color: #e74c8b;
 }
 
+/* ===== TOOLTIP para botones de la tarjeta (ojo / corazón) ===== */
+.pill-btn[data-tooltip] {
+  position: relative;
+}
+.pill-btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  transform: translateY(-50%) translateX(6px);
+  background: var(--purple-900);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(45, 27, 78, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+}
+.pill-btn[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 4px);
+  transform: translateY(-50%) translateX(6px);
+  border: 6px solid transparent;
+  border-left-color: var(--purple-900);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+}
+.pill-btn[data-tooltip]:hover::after,
+.pill-btn[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
+
 .product-info {
   padding: 1.1rem 1.3rem 1.3rem;
   flex: 1;
   display: flex;
   flex-direction: column;
+  text-align: center;
+  align-items: center;
 }
 .product-category {
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--purple-500);
@@ -533,20 +600,25 @@ img {
 }
 .product-title {
   font-family: 'Baloo 2', cursive;
-  font-size: 1.3rem;
+  font-size: 1.55rem;
   font-weight: 700;
   color: var(--purple-900);
   margin: 0.3rem 0 0.15rem;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.3em * 2);
 }
 .product-ref {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--purple-400);
   font-weight: 500;
   margin-bottom: 0.3rem;
 }
 .product-detail {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   color: var(--purple-500);
   font-weight: 500;
   margin-top: -0.1rem;
@@ -554,33 +626,37 @@ img {
 }
 .product-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.7rem;
   margin-top: auto;
   padding-top: 0.9rem;
   border-top: 1px solid var(--purple-100);
+  width: 100%;
 }
 .product-price {
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   color: var(--purple-800);
 }
 .btn-add {
-  background: var(--purple-600);
-  color: #fff;
-  padding: 0.5rem 1.4rem;
+  width: 100%;
+  background: transparent;
+  color: var(--purple-600);
+  border: 1.5px solid var(--purple-600);
+  padding: 0.6rem 1.4rem;
   border-radius: 30px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
+  text-align: center;
   transition: 0.2s;
-  border: 1px solid transparent;
 }
 .btn-add:hover {
-  background: var(--purple-700);
-  transform: scale(1.02);
+  background: var(--purple-600);
+  color: #fff;
 }
 
-/* ===== SELECTOR DE CANTIDAD + COMPRAR AHORA (usado en el modal / tarjeta grande) ===== */
+/* ===== SELECTOR DE CANTIDAD + COMPRAR AHORA ===== */
 .product-buy-row {
   display: flex;
   align-items: stretch;
@@ -635,7 +711,6 @@ img {
   text-align: center;
 }
 
-/* Botón "Comprar ahora": color sólido bien oscuro, más oscuro que "Agregar" (--purple-600) */
 .btn-comprar-ahora {
   display: block;
   width: 100%;
@@ -658,7 +733,7 @@ img {
   padding: 3rem 1.5rem;
   color: var(--purple-500);
   font-size: 1.1rem;
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -680,16 +755,16 @@ img {
 .quickview-modal {
   background: #fff;
   border-radius: var(--radius);
-  max-width: 960px;
+  max-width: 1240px;
   width: 100%;
-  max-height: 88vh;
+  max-height: 92vh;
   overflow-y: auto;
-  padding: 2.5rem;
+  padding: 3rem;
   position: relative;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
+  gap: 3rem;
   align-items: start;
 }
 .modal-close {
@@ -709,13 +784,13 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--purple-50);
+  background: #fff;
   border-radius: 16px;
   padding: 2rem;
-  min-height: 380px;
+  min-height: 480px;
 }
 .modal-media img {
-  max-height: 420px;
+  max-height: 520px;
   width: 100%;
   object-fit: contain;
 }
@@ -726,33 +801,33 @@ img {
   padding-top: 0.5rem;
 }
 .modal-info .product-category {
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   letter-spacing: 1px;
 }
 .modal-info h2 {
   font-family: 'Baloo 2', cursive;
-  font-size: 2rem;
+  font-size: 2.9rem;
   line-height: 1.2;
   color: var(--purple-900);
   margin: 0.3rem 0 0.2rem;
 }
 .modal-brand {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: var(--purple-500);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 .modal-desc-label {
   font-family: 'Baloo 2', cursive;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   color: var(--purple-800);
   margin-top: 1rem;
   margin-bottom: 0.3rem;
 }
 .modal-desc {
   color: var(--purple-700);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 1.25rem;
+  line-height: 1.65;
 }
 .modal-footer {
   display: flex;
@@ -763,29 +838,28 @@ img {
   padding-top: 1.2rem;
 }
 .modal-footer .product-price {
-  font-size: 1.6rem;
+  font-size: 2.2rem;
 }
 
-/* Fila de cantidad + botones dentro del modal, un poco más grande que en la tarjeta pequeña */
 .modal-buy-row {
   margin-top: 1rem;
 }
 .modal-buy-row .qty-selector {
-  padding: 0.3rem 0.5rem;
+  padding: 0.5rem 0.7rem;
 }
 .modal-buy-row .qty-btn {
-  width: 28px;
-  height: 28px;
-  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  font-size: 1.4rem;
 }
 .modal-buy-row .qty-value {
-  font-size: 0.95rem;
-  min-width: 22px;
+  font-size: 1.25rem;
+  min-width: 26px;
 }
 .modal-buy-row .btn-add,
 .modal-buy-row .btn-comprar-ahora {
-  padding: 0.55rem 1rem;
-  font-size: 0.9rem;
+  padding: 0.75rem 1.2rem;
+  font-size: 1.2rem;
 }
 
 @media (max-width: 720px) {
@@ -848,7 +922,7 @@ img {
   border-top: 4px solid var(--purple-600);
 }
 .footer-inner {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
 }
 .payment-methods {
@@ -990,10 +1064,10 @@ img {
   }
   .product-media {
     min-height: 200px;
-    padding: 1rem;
+    padding: 1.5rem 1rem;
   }
   .product-media img {
-    max-height: 170px;
+    max-height: 150px;
   }
   .product-title {
     font-size: 1.1rem;
@@ -1015,10 +1089,10 @@ img {
   }
   .product-media {
     min-height: 160px;
-    padding: 0.8rem;
+    padding: 1.2rem 0.8rem;
   }
   .product-media img {
-    max-height: 130px;
+    max-height: 120px;
   }
   .product-title {
     font-size: 1rem;
