@@ -213,20 +213,24 @@
       }
 
       // ---------- Eventos de búsqueda ----------
-      searchInput.addEventListener('input', function() {
-        const val = this.value;
-        activeFilters.search = val;
-        searchClear.hidden = !val;
-        filterProducts();
-      });
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const val = this.value;
+          activeFilters.search = val;
+          if (searchClear) searchClear.hidden = !val;
+          filterProducts();
+        });
+      }
 
-      searchClear.addEventListener('click', function() {
-        searchInput.value = '';
-        activeFilters.search = '';
-        this.hidden = true;
-        filterProducts();
-        searchInput.focus();
-      });
+      if (searchClear) {
+        searchClear.addEventListener('click', function() {
+          searchInput.value = '';
+          activeFilters.search = '';
+          this.hidden = true;
+          filterProducts();
+          searchInput.focus();
+        });
+      }
 
       // ---------- Eventos de categorías (checkboxes) ----------
       catChecks.forEach(check => {
@@ -244,11 +248,13 @@
         });
       });
 
-      catReset.addEventListener('click', function() {
-        catChecks.forEach(c => c.checked = false);
-        activeFilters.categories = [];
-        filterProducts();
-      });
+      if (catReset) {
+        catReset.addEventListener('click', function() {
+          catChecks.forEach(c => c.checked = false);
+          activeFilters.categories = [];
+          filterProducts();
+        });
+      }
 
       // ---------- Eventos de navegación (nav) ----------
       navLinks.forEach(link => {
@@ -257,6 +263,11 @@
           // Links como "Mis pedidos" no tienen data-nav: son navegación real,
           // no un filtro, así que los dejamos funcionar normal (sin preventDefault).
           if (!navVal) return;
+
+          // Si esta página no tiene el grid de productos (ej. mis pedidos, carrito,
+          // seguimiento), no hay nada que filtrar/scrollear aquí: dejamos que el link
+          // navegue normal hacia tienda_home#inicio o tienda_home#grid.
+          if (!grid) return;
 
           e.preventDefault();
           // Si es 'inicio' o 'tiendas' o 'nueva' o 'capilar'
@@ -278,31 +289,35 @@
           }
           filterProducts();
           // Scroll al grid (opcional)
-          document.getElementById('grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       });
 
       // ---------- Dropdown categorías ----------
-      categoriesBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const expanded = this.getAttribute('aria-expanded') === 'true';
-        this.setAttribute('aria-expanded', !expanded);
-        dropdownMenu.classList.toggle('show');
-      });
+      if (categoriesBtn) {
+        categoriesBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          dropdownMenu.classList.toggle('show');
+        });
+      }
 
       document.addEventListener('click', function(e) {
-        if (!e.target.closest('.categories-container')) {
+        if (dropdownMenu && !e.target.closest('.categories-container')) {
           dropdownMenu.classList.remove('show');
           categoriesBtn.setAttribute('aria-expanded', 'false');
         }
       });
 
       // ---------- Mobile toggle ----------
-      mobileToggle.addEventListener('click', function() {
-        const expanded = this.getAttribute('aria-expanded') === 'true';
-        this.setAttribute('aria-expanded', !expanded);
-        navList.classList.toggle('open');
-      });
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          navList.classList.toggle('open');
+        });
+      }
 
       // ---------- Favoritos ----------
       document.querySelectorAll('.btn-fav').forEach(btn => {
@@ -336,17 +351,19 @@
       });
 
       // Corazón del header: alterna entre "ver todo" y "ver solo mis favoritos"
-      favToggleBtn.addEventListener('click', function() {
-        activeFilters.favoritesOnly = !activeFilters.favoritesOnly;
-        this.classList.toggle('active', activeFilters.favoritesOnly);
-        this.setAttribute('aria-pressed', String(activeFilters.favoritesOnly));
-        const iconUse = this.querySelector('svg use');
-        if (iconUse) iconUse.setAttribute('href', activeFilters.favoritesOnly ? '#i-heart-fill' : '#i-heart');
-        if (activeFilters.favoritesOnly && favorites.size === 0) {
-          showToast('Todavía no marcaste ningún favorito 💜');
-        }
-        filterProducts();
-      });
+      if (favToggleBtn) {
+        favToggleBtn.addEventListener('click', function() {
+          activeFilters.favoritesOnly = !activeFilters.favoritesOnly;
+          this.classList.toggle('active', activeFilters.favoritesOnly);
+          this.setAttribute('aria-pressed', String(activeFilters.favoritesOnly));
+          const iconUse = this.querySelector('svg use');
+          if (iconUse) iconUse.setAttribute('href', activeFilters.favoritesOnly ? '#i-heart-fill' : '#i-heart');
+          if (activeFilters.favoritesOnly && favorites.size === 0) {
+            showToast('Todavía no marcaste ningún favorito 💜');
+          }
+          filterProducts();
+        });
+      }
 
       // ---------- Carrito ----------
       // Carrito "falso" solo para botones que no tienen la clase btn-add-real
@@ -478,56 +495,66 @@
         });
       });
 
-      modalClose.addEventListener('click', function() {
-        modalOverlay.hidden = true;
-      });
-
-      modalOverlay.addEventListener('click', function(e) {
-        if (e.target === this) modalOverlay.hidden = true;
-      });
-
-      // ---------- Hero carrusel ----------
-      const heroTrack = document.getElementById('heroTrack');
-      const heroDots = document.getElementById('heroDots');
-      const slides = heroTrack.querySelectorAll('.hero-slide');
-      let currentSlide = 0;
-      let totalSlides = slides.length;
-
-      // Crear dots
-      slides.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.setAttribute('role', 'tab');
-        dot.setAttribute('aria-label', `Diapositiva ${i+1}`);
-        if (i === 0) dot.classList.add('active-dot');
-        dot.addEventListener('click', () => goToSlide(i));
-        heroDots.appendChild(dot);
-      });
-
-      function goToSlide(index) {
-        if (index < 0) index = totalSlides - 1;
-        if (index >= totalSlides) index = 0;
-        currentSlide = index;
-        heroTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-        document.querySelectorAll('.hero-dots button').forEach((d, i) => {
-          d.classList.toggle('active-dot', i === currentSlide);
+      if (modalClose) {
+        modalClose.addEventListener('click', function() {
+          modalOverlay.hidden = true;
         });
       }
 
-      document.getElementById('heroPrev').addEventListener('click', () => goToSlide(currentSlide - 1));
-      document.getElementById('heroNext').addEventListener('click', () => goToSlide(currentSlide + 1));
+      if (modalOverlay) {
+        modalOverlay.addEventListener('click', function(e) {
+          if (e.target === this) modalOverlay.hidden = true;
+        });
+      }
 
-      // Auto-play (opcional)
-      let heroInterval = setInterval(() => goToSlide(currentSlide + 1), 5000);
-      document.querySelector('.hero').addEventListener('mouseenter', () => clearInterval(heroInterval));
-      document.querySelector('.hero').addEventListener('mouseleave', () => {
-        heroInterval = setInterval(() => goToSlide(currentSlide + 1), 5000);
-      });
+      // ---------- Hero carrusel (protegido: solo corre si existe el hero en esta página) ----------
+      const heroTrack = document.getElementById('heroTrack');
+      if (heroTrack) {
+        const heroDots = document.getElementById('heroDots');
+        const slides = heroTrack.querySelectorAll('.hero-slide');
+        let currentSlide = 0;
+        let totalSlides = slides.length;
+
+        // Crear dots
+        slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.setAttribute('role', 'tab');
+          dot.setAttribute('aria-label', `Diapositiva ${i+1}`);
+          if (i === 0) dot.classList.add('active-dot');
+          dot.addEventListener('click', () => goToSlide(i));
+          heroDots.appendChild(dot);
+        });
+
+        function goToSlide(index) {
+          if (index < 0) index = totalSlides - 1;
+          if (index >= totalSlides) index = 0;
+          currentSlide = index;
+          heroTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+          document.querySelectorAll('.hero-dots button').forEach((d, i) => {
+            d.classList.toggle('active-dot', i === currentSlide);
+          });
+        }
+
+        document.getElementById('heroPrev').addEventListener('click', () => goToSlide(currentSlide - 1));
+        document.getElementById('heroNext').addEventListener('click', () => goToSlide(currentSlide + 1));
+
+        // Auto-play (opcional)
+        let heroInterval = setInterval(() => goToSlide(currentSlide + 1), 5000);
+        document.querySelector('.hero').addEventListener('mouseenter', () => clearInterval(heroInterval));
+        document.querySelector('.hero').addEventListener('mouseleave', () => {
+          heroInterval = setInterval(() => goToSlide(currentSlide + 1), 5000);
+        });
+      }
 
       // ---------- Inicializar ----------
-      filterProducts();
+      // Protegido: filterProducts recorre "products", que en páginas sin grid
+      // simplemente estará vacío (no rompe nada), pero lo saltamos igual por claridad.
+      if (grid) {
+        filterProducts();
+      }
 
       // Contadores iniciales
-      cartCount.hidden = true;
-      favCount.hidden = true;
+      if (cartCount) cartCount.hidden = true;
+      if (favCount) favCount.hidden = true;
 
     })();
