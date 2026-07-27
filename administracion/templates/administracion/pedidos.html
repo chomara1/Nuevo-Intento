@@ -14,7 +14,8 @@
                         <th>Cliente</th>
                         <th>Producto</th>
                         <th>Estado actual</th>
-                        <th>Cambiar estado</th>
+                        <th>Empresa de envíos</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,15 +26,28 @@
                         <td>{{ envio.producto.nombre }}</td>
                         <td>{{ envio.get_estado_actual_display }}</td>
                         <td>
-                            <form method="post" action="{% url 'administracion:actualizar_estado_pedido' envio_id=envio.id %}" style="display:flex; gap:8px;">
-                                {% csrf_token %}
-                                <select name="estado_actual" class="select-estado">
-                                    {% for valor, etiqueta in estados %}
-                                        <option value="{{ valor }}" {% if valor == envio.estado_actual %}selected{% endif %}>{{ etiqueta }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" class="btn btn-approve">Guardar</button>
-                            </form>
+                            {% if envio.estado_actual == 'cancelado' %}
+                                <span style="opacity:0.6;">—</span>
+                            {% else %}
+                                <form method="post" action="{% url 'administracion:asignar_empresa_pedido' envio_id=envio.id %}" style="display:flex; gap:8px;">
+                                    {% csrf_token %}
+                                    <select name="empresa_envio" class="select-estado">
+                                        <option value="">Sin asignar</option>
+                                        {% for empresa in empresas_envio %}
+                                            <option value="{{ empresa.id }}" {% if envio.empresa_envio_id == empresa.id %}selected{% endif %}>{{ empresa.nombre_empresa }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-approve">Guardar</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if envio.estado_actual != 'cancelado' and envio.estado_actual != 'entregado' %}
+                                <form method="post" action="{% url 'administracion:cancelar_pedido' envio_id=envio.id %}" onsubmit="return confirm('¿Seguro que quieres cancelar este pedido?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Cancelar</button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

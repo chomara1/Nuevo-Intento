@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.apps import apps
+from django.utils import timezone
 from .decorators import admin_required
 from .models import DisenoSitio
 from .forms import DisenoSitioForm
@@ -144,33 +145,57 @@ def pagos(request):
 @admin_required
 def pedidos(request):
     Envio = apps.get_model('rastreo', 'Envio')
+    EmpresaEnvio = apps.get_model('rastreo', 'EmpresaEnvio')
     pedidos_lista = (
         Envio.objects
-        .select_related('cliente', 'producto')
+        .select_related('cliente', 'producto', 'empresa_envio')
         .order_by('-fecha_creacion')
     )
+    for envio in pedidos_lista:
+        envio.actualizar_estado_automatico()
     return render(request, 'administracion/pedidos.html', {
         'pedidos': pedidos_lista,
         'estados': Envio.ESTADOS,
+        'empresas_envio': EmpresaEnvio.objects.all(),
         'active': 'pedidos',
     })
 
 
 @admin_required
-def actualizar_estado_pedido(request, envio_id):
+def asignar_empresa_pedido(request, envio_id):
+    Envio = apps.get_model('rastreo', 'Envio')
+    EmpresaEnvio = apps.get_model('rastreo', 'EmpresaEnvio')
+    envio = get_object_or_404(Envio, id=envio_id)
+
+    if request.method == 'POST':
+        empresa_envio_id = request.POST.get('empresa_envio')
+
+        if empresa_envio_id:
+            empresa = get_object_or_404(EmpresaEnvio, id=empresa_envio_id)
+            if envio.empresa_envio_id != empresa.id:
+                envio.fecha_asignacion_empresa = timezone.now()
+            envio.empresa_envio = empresa
+            messages.success(request, f"Se asignó '{empresa.nombre_empresa}' al pedido {envio.numero_guia}. El estado avanzará automáticamente.")
+        else:
+            envio.empresa_envio = None
+            envio.fecha_asignacion_empresa = None
+            messages.success(request, f"Se quitó la empresa de envíos del pedido {envio.numero_guia}.")
+
+        envio.save()
+
+    return redirect('administracion:pedidos')
+
+
+@admin_required
+def cancelar_pedido(request, envio_id):
     Envio = apps.get_model('rastreo', 'Envio')
     HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
     envio = get_object_or_404(Envio, id=envio_id)
 
     if request.method == 'POST':
-        nuevo_estado = request.POST.get('estado_actual')
-        estados_validos = dict(Envio.ESTADOS)
-        if nuevo_estado in estados_validos:
-            envio.estado_actual = nuevo_estado
-            envio.save()
-            HistorialEstado.objects.create(envio=envio, estado=nuevo_estado)
-            messages.success(request, f"El pedido {envio.numero_guia} se actualizó a '{estados_validos[nuevo_estado]}'.")
-        else:
-            messages.error(request, "Estado inválido.")
+        envio.estado_actual = 'cancelado'
+        envio.save()
+        HistorialEstado.objects.create(envio=envio, estado='cancelado', comentario='Cancelado por el administrador')
+        messages.success(request, f"El pedido {envio.numero_guia} fue cancelado.")
 
     return redirect('administracion:pedidos')

@@ -8,12 +8,15 @@ from .models import Envio, HistorialEstado
 @login_required
 def mi_rastreo(request, codigo):
     envio = get_object_or_404(Envio, numero_guia=codigo, cliente=request.user)
+    envio.actualizar_estado_automatico()
     return render(request, 'detalle_envio.html', {'envio': envio})
 
 
 @login_required
 def lista_mis_envios(request):
     envios = Envio.objects.filter(cliente=request.user).order_by('-fecha_creacion')
+    for envio in envios:
+        envio.actualizar_estado_automatico()
     return render(request, 'mis_envios.html', {'envios': envios})
 
 
