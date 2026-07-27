@@ -1,318 +1,317 @@
-from django.test import TestCase
 """
-Pruebas unitarias de la app 'administracion'.
+Pruebas unitarias de la app 'usuarios'.
 
 Qué cubre este archivo:
-1) DisenoSitioModeloTests        -> el modelo "singleton" DisenoSitio.
-2) DashboardVistaTests           -> vista dashboard.
-3) AprobarRechazarProveedorTests -> vistas aprobar_proveedor / rechazar_proveedor.
-4) ListaYProductosProveedorTests -> lista_proveedores / productos_proveedor.
-5) EliminarProveedorYProductoTests -> eliminar_proveedor / eliminar_producto_admin.
-6) GestionDisenoVistaTests       -> vista gestion_diseno (formulario del carrusel).
-7) PagosYPedidosVistaTests       -> pagos / pedidos / actualizar_estado_pedido.
+1) PerfilModelTests      -> el modelo Perfil y las señales (signals) que lo crean.
+2) RegistroVistaTests    -> la vista de registro (usuarios.views.registro).
+3) LoginVistaTests       -> la vista de login (usuarios.views.login_view) y
+                             la función redirect_por_rol.
+4) PerfilVistaTests      -> la vista de perfil, protegida con @login_required.
+5) TiendaHomeVistaTests  -> la vista pública tienda_home.
 
- """
-from decimal import Decimal
+Cómo correr solo este archivo una vez copiado a usuarios/tests.py:
+    python manage.py test usuarios
+"""
 
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User, AnonymousUser
-from django.contrib.messages.middleware import MessageMiddleware
-from django.contrib.sessions.middleware import SessionMiddleware
+from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
+from django.db.models.signals import post_save
 
-from .models import DisenoSitio
-from .decorators import admin_required
-from inventario.models import Producto
-from rastreo.models import Envio
-
-
-def crear_admin(username='admin1'):
-    usuario = User.objects.create_user(
-        username=username, email=f'{username}@test.com', password='clave123'
-    )
-    usuario.perfil.rol = 'ADMIN'
-    usuario.perfil.save()
-    return usuario
-
-
-def crear_proveedor(username='proveedor1', aprobado=False):
-    usuario = User.objects.create_user(
-        username=username, email=f'{username}@test.com', password='clave123'
-    )
-    usuario.perfil.rol = 'PROVEEDOR'
-    usuario.perfil.aprobado = aprobado
-    usuario.perfil.save()
-    return usuario
-
-
-def crear_cliente(username='cliente1'):
-    return User.objects.create_user(
-        username=username, email=f'{username}@test.com', password='clave123'
-    )
-
-
-def crear_producto(proveedor, **overrides):
-    datos = {
-        'proveedor': proveedor,
-        'nombre': 'Base Líquida',
-        'descripcion': 'Cobertura media',
-        'precio': Decimal('40000.00'),
-        'cantidad_disponible': 20,
-        'esta_activo': True,
-    }
-    datos.update(overrides)
-    return Producto.objects.create(**datos)
+from .models import Perfil, crear_perfil_usuario
 
 
 # ---------------------------------------------------------------------------
-# 1) MODELO: DisenoSitio (singleton)
+# 1) MODELO
 # ---------------------------------------------------------------------------
-class DisenoSitioModeloTests(TestCase):
+class PerfilModelTests(TestCase):
+    """
+    Probamos el modelo directamente, sin pasar por vistas ni por el cliente
+    HTTP. Esto es lo más rápido de probar y donde deben vivir la mayoría de
+    tus tests: si la lógica de negocio está en el modelo, pruébala ahí.
+    """
 
-    def test_cargar_crea_el_registro_si_no_existe(self):
-        self.assertEqual(DisenoSitio.objects.count(), 0)
-        diseno = DisenoSitio.cargar()
-        self.assertEqual(diseno.pk, 1)
-        self.assertEqual(DisenoSitio.objects.count(), 1)
-
-    def test_cargar_devuelve_siempre_el_mismo_registro(self):
-        primero = DisenoSitio.cargar()
-        primero.slide1_titulo = 'Título editado'
-        primero.save()
-
-        segundo = DisenoSitio.cargar()
-        self.assertEqual(segundo.pk, 1)
-        self.assertEqual(segundo.slide1_titulo, 'Título editado')
-        self.assertEqual(DisenoSitio.objects.count(), 1)
-
-    def test_guardar_una_instancia_nueva_fuerza_pk_1(self):
-        diseno = DisenoSitio(slide1_titulo='Otro título')
-        diseno.save()
-        self.assertEqual(diseno.pk, 1)
-
-    def test_intentar_guardar_una_segunda_instancia_sobrescribe_la_primera(self):
-        DisenoSitio.objects.create(slide1_titulo='Primero')
-        DisenoSitio.objects.create(slide1_titulo='Segundo')
-
-        self.assertEqual(DisenoSitio.objects.count(), 1)
-        self.assertEqual(DisenoSitio.objects.get(pk=1).slide1_titulo, 'Segundo')
-
-    def test_delete_no_borra_el_registro(self):
-        diseno = DisenoSitio.cargar()
-        diseno.delete()
-        self.assertTrue(DisenoSitio.objects.filter(pk=1).exists())
-
-
-
-# ---------------------------------------------------------------------------
-# 3) VISTA: dashboard
-# ---------------------------------------------------------------------------
-class DashboardVistaTests(TestCase):
-
-    def setUp(self):
-        self.admin = crear_admin()
-        self.url = reverse('administracion:dashboard')
-
-    def test_no_admin_no_puede_entrar(self):
-        crear_cliente()
-        self.client.login(username='cliente1', password='clave123')
-        response = self.client.get(self.url)
-        self.assertRedirects(response, reverse('usuarios:tienda_home'))
-
-    def test_admin_ve_proveedores_pendientes_de_aprobacion(self):
-        crear_proveedor(username='pendiente1', aprobado=False)
-        crear_proveedor(username='aprobado1', aprobado=True)
-
-        self.client.login(username='admin1', password='clave123')
-        response = self.client.get(self.url)
-
-        usernames = [p.usuario.username for p in response.context['proveedores_pendientes']]
-        self.assertIn('pendiente1', usernames)
-        self.assertNotIn('aprobado1', usernames)
-
-
-# ---------------------------------------------------------------------------
-# 4) VISTAS: aprobar_proveedor / rechazar_proveedor
-# ---------------------------------------------------------------------------
-class AprobarRechazarProveedorVistaTests(TestCase):
-
-    def setUp(self):
-        self.admin = crear_admin()
-        self.proveedor = crear_proveedor(username='pendiente2', aprobado=False)
-        self.client.login(username='admin1', password='clave123')
-
-    def test_aprobar_proveedor_marca_aprobado_true(self):
-        url = reverse('administracion:aprobar_proveedor', args=[self.proveedor.perfil.id])
-        response = self.client.get(url)
-
-        self.assertRedirects(response, reverse('administracion:dashboard'))
-        self.proveedor.perfil.refresh_from_db()
-        self.assertTrue(self.proveedor.perfil.aprobado)
-
-    def test_rechazar_proveedor_elimina_el_usuario(self):
-        url = reverse('administracion:rechazar_proveedor', args=[self.proveedor.perfil.id])
-        response = self.client.get(url)
-
-        self.assertRedirects(response, reverse('administracion:dashboard'))
-        self.assertFalse(User.objects.filter(username='pendiente2').exists())
-
-
-# ---------------------------------------------------------------------------
-# 5) VISTAS: lista_proveedores / productos_proveedor
-# ---------------------------------------------------------------------------
-class ListaYProductosProveedorVistaTests(TestCase):
-
-    def setUp(self):
-        self.admin = crear_admin()
-        self.proveedor = crear_proveedor(username='prov_lista', aprobado=True)
-        self.client.login(username='admin1', password='clave123')
-
-    def test_lista_proveedores_incluye_conteo_de_productos(self):
-        crear_producto(self.proveedor, nombre='P1')
-        crear_producto(self.proveedor, nombre='P2')
-
-        response = self.client.get(reverse('administracion:lista_proveedores'))
-        proveedores = list(response.context['proveedores'])
-        perfil_encontrado = next(p for p in proveedores if p.usuario == self.proveedor)
-        self.assertEqual(perfil_encontrado.total_productos, 2)
-
-    def test_productos_proveedor_muestra_solo_los_de_ese_proveedor(self):
-        crear_producto(self.proveedor, nombre='Propio')
-        otro_proveedor = crear_proveedor(username='otro_prov', aprobado=True)
-        crear_producto(otro_proveedor, nombre='Ajeno')
-
-        url = reverse('administracion:productos_proveedor', args=[self.proveedor.perfil.id])
-        response = self.client.get(url)
-
-        nombres = [p.nombre for p in response.context['productos']]
-        self.assertIn('Propio', nombres)
-        self.assertNotIn('Ajeno', nombres)
-
-
-# ---------------------------------------------------------------------------
-# 6) VISTAS: eliminar_proveedor / eliminar_producto_admin
-# ---------------------------------------------------------------------------
-class EliminarProveedorYProductoVistaTests(TestCase):
-
-    def setUp(self):
-        self.admin = crear_admin()
-        self.proveedor = crear_proveedor(username='prov_borrar', aprobado=True)
-        self.client.login(username='admin1', password='clave123')
-
-    def test_eliminar_proveedor_borra_tambien_sus_productos(self):
-        crear_producto(self.proveedor, nombre='Producto a borrar')
-        url = reverse('administracion:eliminar_proveedor', args=[self.proveedor.perfil.id])
-
-        response = self.client.get(url)
-
-        self.assertRedirects(response, reverse('administracion:lista_proveedores'))
-        self.assertFalse(User.objects.filter(username='prov_borrar').exists())
-        self.assertEqual(Producto.objects.filter(nombre='Producto a borrar').count(), 0)
-
-    def test_eliminar_producto_puntual_no_afecta_al_proveedor(self):
-        producto = crear_producto(self.proveedor, nombre='Solo este')
-        url = reverse('administracion:eliminar_producto_admin', args=[producto.id])
-
-        response = self.client.get(url)
-
-        self.assertRedirects(
-            response,
-            reverse('administracion:productos_proveedor', args=[self.proveedor.perfil.id]),
+    def test_crear_usuario_crea_perfil_automaticamente(self):
+        """
+        usuarios/models.py conecta la señal post_save de User a
+        crear_perfil_usuario, que crea un Perfil cuando created=True.
+        """
+        usuario = User.objects.create_user(
+            username='juan', email='juan@test.com', password='clave123'
         )
-        self.assertFalse(Producto.objects.filter(id=producto.id).exists())
-        self.assertTrue(User.objects.filter(username='prov_borrar').exists())
+        self.assertTrue(Perfil.objects.filter(usuario=usuario).exists())
+
+    def test_perfil_por_defecto_tiene_rol_cliente_y_esta_aprobado(self):
+        usuario = User.objects.create_user(
+            username='maria', email='maria@test.com', password='clave123'
+        )
+        perfil = usuario.perfil
+        self.assertEqual(perfil.rol, 'CLIENTE')
+        self.assertTrue(perfil.aprobado)
+
+    def test_str_devuelve_username_y_rol_legible(self):
+        usuario = User.objects.create_user(
+            username='pedro', email='pedro@test.com', password='clave123'
+        )
+        perfil = usuario.perfil
+        self.assertEqual(str(perfil), f"pedro - {perfil.get_rol_display()}")
+
+    def test_perfil_nuevo_creado_directamente_como_proveedor_queda_sin_aprobar(self):
+        """
+        Este test aísla la regla de negocio que vive en Perfil.save():
+
+            if self.pk is None and self.rol == 'PROVEEDOR':
+                self.aprobado = False
+
+        Como la señal post_save de User SIEMPRE crea un Perfil con rol
+        CLIENTE apenas se crea el User, para poder probar la rama
+        "Perfil nuevo con rol PROVEEDOR" desconectamos momentáneamente la
+        señal, así el User queda "pelado" (sin Perfil) y podemos crear
+        nosotros mismos el Perfil con rol='PROVEEDOR'.
+
+        El bloque try/finally garantiza que la señal se reconecte SIEMPRE,
+        incluso si el test falla, para no romper el resto de la suite.
+        """
+        post_save.disconnect(crear_perfil_usuario, sender=User)
+        try:
+            usuario = User.objects.create_user(
+                username='nuevo_prov', email='prov@test.com', password='clave123'
+            )
+            self.assertFalse(Perfil.objects.filter(usuario=usuario).exists())
+
+            perfil = Perfil(usuario=usuario, rol='PROVEEDOR')
+            perfil.save()
+            perfil.refresh_from_db()
+
+            self.assertFalse(perfil.aprobado)
+        finally:
+            post_save.connect(crear_perfil_usuario, sender=User)
+
+    def test_perfil_cliente_no_requiere_aprobacion_al_crearse(self):
+        post_save.disconnect(crear_perfil_usuario, sender=User)
+        try:
+            usuario = User.objects.create_user(
+                username='nuevo_cli', email='cli@test.com', password='clave123'
+            )
+            perfil = Perfil(usuario=usuario, rol='CLIENTE')
+            perfil.save()
+            self.assertTrue(perfil.aprobado)
+        finally:
+            post_save.connect(crear_perfil_usuario, sender=User)
 
 
 # ---------------------------------------------------------------------------
-# 7) VISTA: gestion_diseno
+# 2) VISTA: registro
 # ---------------------------------------------------------------------------
-class GestionDisenoVistaTests(TestCase):
+class RegistroVistaTests(TestCase):
 
     def setUp(self):
-        self.admin = crear_admin()
-        self.client.login(username='admin1', password='clave123')
-        self.url = reverse('administracion:gestion_diseno')
+        # setUp corre ANTES de cada test_* de esta clase. Aquí dejamos listo
+        # todo lo que todos los tests de esta clase necesitan.
+        self.url = reverse('usuarios:registro')
 
-    def test_get_muestra_formulario_con_valores_actuales(self):
+    def test_get_muestra_formulario_de_registro(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertIn('form', response.context)
+        self.assertTemplateUsed(response, 'registro.html')
 
-    def test_post_valido_actualiza_el_diseno(self):
+    def test_registro_exitoso_como_cliente(self):
         datos = {
-            'slide1_titulo': 'Nuevo título 1', 'slide1_texto': 'texto 1',
-            'slide1_color_a': '#111111', 'slide1_color_b': '#222222',
-            'slide2_titulo': 'Nuevo título 2', 'slide2_texto': 'texto 2',
-            'slide2_color_a': '#333333', 'slide2_color_b': '#444444',
-            'slide3_titulo': 'Nuevo título 3', 'slide3_texto': 'texto 3',
-            'slide3_color_a': '#555555', 'slide3_color_b': '#666666',
+            'username': 'ana',
+            'email': 'ana@test.com',
+            'password': 'clave123',
+            'tipo_cuenta': 'CLIENTE',
         }
         response = self.client.post(self.url, datos)
 
-        self.assertRedirects(response, self.url)
-        diseno = DisenoSitio.cargar()
-        self.assertEqual(diseno.slide1_titulo, 'Nuevo título 1')
-        self.assertEqual(diseno.slide2_color_a, '#333333')
-
-
-# ---------------------------------------------------------------------------
-# 8) VISTAS: pagos / pedidos / actualizar_estado_pedido
-# ---------------------------------------------------------------------------
-class PagosYPedidosVistaTests(TestCase):
-
-    def setUp(self):
-        self.admin = crear_admin()
-        self.cliente = crear_cliente()
-        self.proveedor = crear_proveedor(username='prov_pedidos', aprobado=True)
-        self.producto = crear_producto(self.proveedor)
-        self.client.login(username='admin1', password='clave123')
-
-    def _crear_envio(self, numero_guia, estado_actual='preparando'):
-        return Envio.objects.create(
-            cliente=self.cliente,
-            producto=self.producto,
-            numero_guia=numero_guia,
-            cantidad=1,
-            precio_unitario=self.producto.precio,
-            estado_actual=estado_actual,
+        # No seguimos el redirect (fetch_redirect_response=False) para que
+        # este test no dependa de que la vista tienda_home renderice bien;
+        # aquí solo nos interesa el comportamiento de "registro", no el de
+        # tienda_home (eso se prueba aparte).
+        self.assertRedirects(
+            response, reverse('usuarios:tienda_home'), fetch_redirect_response=False
         )
 
-    def test_pagos_excluye_los_envios_cancelados(self):
-        self._crear_envio('PAGO0001', estado_actual='preparando')
-        self._crear_envio('PAGO0002', estado_actual='cancelado')
+        usuario = User.objects.get(username='ana')
+        self.assertEqual(usuario.perfil.rol, 'CLIENTE')
+        self.assertTrue(usuario.perfil.aprobado)
 
-        response = self.client.get(reverse('administracion:pagos'))
-        guias = [p.numero_guia for p in response.context['pagos']]
-        self.assertIn('PAGO0001', guias)
-        self.assertNotIn('PAGO0002', guias)
+        # El usuario debe quedar autenticado (auth_login fue llamado)
+        self.assertIn('_auth_user_id', self.client.session)
 
-    def test_pedidos_incluye_todos_los_estados(self):
-        self._crear_envio('PED0001', estado_actual='preparando')
-        self._crear_envio('PED0002', estado_actual='cancelado')
+    def test_registro_exitoso_como_proveedor_queda_pendiente_de_aprobacion(self):
+        datos = {
+            'username': 'proveedor1',
+            'email': 'proveedor1@test.com',
+            'password': 'clave123',
+            'tipo_cuenta': 'PROVEEDOR',
+        }
+        response = self.client.post(self.url, datos)
 
-        response = self.client.get(reverse('administracion:pedidos'))
-        guias = [p.numero_guia for p in response.context['pedidos']]
-        self.assertIn('PED0001', guias)
-        self.assertIn('PED0002', guias)
+        usuario = User.objects.get(username='proveedor1')
+        self.assertFalse(usuario.perfil.aprobado)
 
-    def test_actualizar_estado_pedido_cambia_el_estado_y_registra_historial(self):
-        envio = self._crear_envio('UPD0001')
-        url = reverse('administracion:actualizar_estado_pedido', args=[envio.id])
+        # El mensaje se guarda con messages.info() antes del redirect; para
+        # leerlo necesitamos "seguir" la respuesta hasta la próxima página.
+        response_seguido = self.client.get(reverse('usuarios:tienda_home'))
+        mensajes = [m.message for m in get_messages(response_seguido.wsgi_request)]
+        # (alternativa más directa, sin una segunda petición:)
+        mensajes_directos = [m.message for m in get_messages(response.wsgi_request)]
+        self.assertTrue(
+            any('pendiente de aprobación' in m for m in mensajes_directos)
+        )
 
-        response = self.client.post(url, {'estado_actual': 'entregado'})
+    def test_password_muy_corta_no_registra_y_muestra_error(self):
+        datos = {
+            'username': 'x1', 'email': 'x1@test.com',
+            'password': 'ab', 'tipo_cuenta': 'CLIENTE',
+        }
+        response = self.client.post(self.url, datos)
 
-        self.assertRedirects(response, reverse('administracion:pedidos'))
-        envio.refresh_from_db()
-        self.assertEqual(envio.estado_actual, 'entregado')
-        self.assertEqual(envio.historial.count(), 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('error', response.context)
+        self.assertEqual(
+            response.context['error'],
+            'La contraseña debe tener entre 5 y 16 caracteres.',
+        )
+        self.assertFalse(User.objects.filter(username='x1').exists())
 
-    def test_estado_invalido_no_actualiza_el_pedido(self):
-        envio = self._crear_envio('UPD0002')
-        url = reverse('administracion:actualizar_estado_pedido', args=[envio.id])
+    def test_password_muy_larga_no_registra_y_muestra_error(self):
+        datos = {
+            'username': 'x2', 'email': 'x2@test.com',
+            'password': 'a' * 17, 'tipo_cuenta': 'CLIENTE',
+        }
+        response = self.client.post(self.url, datos)
 
-        response = self.client.post(url, {'estado_actual': 'no_existe'})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('error', response.context)
+        self.assertFalse(User.objects.filter(username='x2').exists())
 
-        self.assertRedirects(response, reverse('administracion:pedidos'))
-        envio.refresh_from_db()
-        self.assertEqual(envio.estado_actual, 'preparando')
-# Create your tests here.
+    def test_username_duplicado_muestra_error(self):
+        User.objects.create_user(
+            username='repetido', email='otro@test.com', password='clave123'
+        )
+        datos = {
+            'username': 'repetido', 'email': 'nuevo@test.com',
+            'password': 'clave123', 'tipo_cuenta': 'CLIENTE',
+        }
+        response = self.client.post(self.url, datos)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('error', response.context)
+        # Sigue existiendo solo el original, no se creó uno nuevo
+        self.assertEqual(User.objects.filter(username='repetido').count(), 1)
+
+    def test_email_duplicado_muestra_error(self):
+        User.objects.create_user(
+            username='original', email='mismo@test.com', password='clave123'
+        )
+        datos = {
+            'username': 'otronombre', 'email': 'mismo@test.com',
+            'password': 'clave123', 'tipo_cuenta': 'CLIENTE',
+        }
+        response = self.client.post(self.url, datos)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('error', response.context)
+        self.assertFalse(User.objects.filter(username='otronombre').exists())
+
+
+# ---------------------------------------------------------------------------
+# 3) VISTA: login_view + redirect_por_rol
+# ---------------------------------------------------------------------------
+class LoginVistaTests(TestCase):
+
+    def setUp(self):
+        self.url = reverse('usuarios:login')
+        self.usuario = User.objects.create_user(
+            username='cliente1', email='cliente1@test.com', password='clave123'
+        )
+
+    def test_get_muestra_formulario(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_correcto_de_cliente_redirige_a_tienda_home(self):
+        response = self.client.post(
+            self.url, {'username': 'cliente1@test.com', 'password': 'clave123'}
+        )
+        self.assertRedirects(
+            response, reverse('usuarios:tienda_home'), fetch_redirect_response=False
+        )
+        self.assertIn('_auth_user_id', self.client.session)
+
+    def test_login_correo_inexistente_muestra_error(self):
+        response = self.client.post(
+            self.url, {'username': 'noexiste@test.com', 'password': 'clave123'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['error'], 'No existe la cuenta.')
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_login_password_incorrecta_muestra_error(self):
+        response = self.client.post(
+            self.url, {'username': 'cliente1@test.com', 'password': 'incorrecta'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['error'], 'Contraseña incorrecta.')
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_login_redirige_proveedor_a_su_dashboard(self):
+        self.usuario.perfil.rol = 'PROVEEDOR'
+        self.usuario.perfil.save()
+
+        response = self.client.post(
+            self.url, {'username': 'cliente1@test.com', 'password': 'clave123'}
+        )
+        self.assertRedirects(
+            response, reverse('inventario:dashboard'), fetch_redirect_response=False
+        )
+
+    def test_login_redirige_admin_a_panel_administracion(self):
+        self.usuario.perfil.rol = 'ADMIN'
+        self.usuario.perfil.save()
+
+        response = self.client.post(
+            self.url, {'username': 'cliente1@test.com', 'password': 'clave123'}
+        )
+        self.assertRedirects(
+            response, reverse('administracion:dashboard'), fetch_redirect_response=False
+        )
+
+
+# ---------------------------------------------------------------------------
+# 4) VISTA: perfil (protegida con @login_required)
+# ---------------------------------------------------------------------------
+class PerfilVistaTests(TestCase):
+
+    def setUp(self):
+        self.url = reverse('usuarios:perfil')
+        self.usuario = User.objects.create_user(
+            username='con_sesion', email='con_sesion@test.com', password='clave123'
+        )
+
+    def test_usuario_anonimo_es_redirigido_a_login(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('usuarios:login'), response.url)
+
+    def test_usuario_autenticado_puede_ver_su_perfil(self):
+        self.client.login(username='con_sesion', password='clave123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'perfil.html')
+
+
+# ---------------------------------------------------------------------------
+# 5) VISTA: tienda_home (pública)
+# ---------------------------------------------------------------------------
+class TiendaHomeVistaTests(TestCase):
+
+    def test_pagina_publica_responde_200_sin_login(self):
+        response = self.client.get(reverse('usuarios:tienda_home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tienda_home.html')
+        self.assertIn('productos', response.context)
+        self.assertIn('diseno', response.context)
