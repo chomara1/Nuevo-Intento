@@ -1,5 +1,4 @@
-from django.test import TestCase
-"""
+ """
 Pruebas unitarias de la app 'rastreo'.
 
 Qué cubre este archivo:
@@ -9,7 +8,8 @@ Qué cubre este archivo:
 4) ActualizarEstadoVistaTests-> vista actualizar_estado (solo el proveedor
                                  dueño del producto puede actualizar el envío).
 
- 
+Cómo correr solo este archivo una vez copiado a rastreo/tests.py:
+    python manage.py test rastreo
 """
 
 from decimal import Decimal
@@ -188,7 +188,3 @@ class ActualizarEstadoVistaTests(TestCase):
         self.assertEqual(response.status_code, 200)  # vuelve a mostrar el form
         self.envio.refresh_from_db()
         self.assertEqual(self.envio.estado_actual, 'preparando')  # sin cambios
-
-# Create your tests here.
-
-# Create your tests here.
