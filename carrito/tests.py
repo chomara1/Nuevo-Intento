@@ -1,5 +1,4 @@
-from django.test import TestCase
-"""
+ """
 Pruebas unitarias de la app 'carrito'.
 
 Qué cubre este archivo:
@@ -8,7 +7,14 @@ Qué cubre este archivo:
 3) ValidarDatosEnvioTests        -> la función auxiliar _validar_datos_envio().
 4) VerCarritoVistaTests          -> vista ver_carrito.
 5) AgregarAlCarritoVistaTests    -> vista agregar_al_carrito (incluye AJAX).
- 
+6) ComprarAhoraVistaTests        -> vista comprar_ahora (compra directa).
+7) QuitarItemVistaTests          -> vista quitar_item.
+8) CheckoutVistaTests            -> vista checkout.
+9) ConfirmarPagoVistaTests       -> vista confirmar_pago (la más importante:
+                                     valida datos, revisa stock, descuenta
+                                     inventario y genera el Envio).
+
+
 """
 
 from decimal import Decimal
@@ -148,7 +154,46 @@ class ValidarDatosEnvioTests(TestCase):
         errores = _validar_datos_envio(**datos)
         self.assertTrue(any('teléfono' in e for e in errores))
 
-     
+    def test_telefono_con_menos_de_10_digitos_es_invalido(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'telefono': '30012345'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('teléfono' in e for e in errores))
+
+    def test_correo_sin_arroba_es_invalido(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'correo': 'lauratest.com'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('correo' in e for e in errores))
+
+    def test_direccion_sin_numeros_es_invalida(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'direccion': 'Calle sin numero'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('dirección' in e for e in errores))
+
+    def test_direccion_muy_corta_es_invalida(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'direccion': 'Cl 1'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('dirección' in e for e in errores))
+
+    def test_departamento_con_numeros_es_invalido(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'departamento': 'Antioquia1'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('departamento' in e for e in errores))
+
+    def test_ciudad_con_numeros_es_invalida(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'ciudad': 'Medellin2'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('ciudad' in e for e in errores))
+
+    def test_metodo_de_pago_no_soportado_es_invalido(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'metodo_pago': 'bitcoin'}
+        errores = _validar_datos_envio(**datos)
+        self.assertTrue(any('método de pago' in e for e in errores))
+
+    def test_varios_campos_invalidos_generan_varios_errores(self):
+        datos = {**DATOS_ENVIO_VALIDOS, 'nombre': 'A1', 'telefono': '123'}
+        errores = _validar_datos_envio(**datos)
+        self.assertEqual(len(errores), 2)
+
 
 # ---------------------------------------------------------------------------
 # 4) VISTA: ver_carrito
@@ -223,5 +268,208 @@ class AgregarAlCarritoVistaTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+# ---------------------------------------------------------------------------
+# 6) VISTA: comprar_ahora (compra directa, sin pasar por el carrito)
+# ---------------------------------------------------------------------------
+class ComprarAhoraVistaTests(TestCase):
+
+    def setUp(self):
+        self.cliente = crear_cliente()
+        self.proveedor = crear_proveedor()
+        self.producto = crear_producto(self.proveedor)
+        self.client.login(username='cliente1', password='clave123')
+        self.url = reverse('carrito:comprar_ahora', args=[self.producto.id])
+
+    def test_guarda_la_compra_directa_en_la_sesion_y_redirige_a_checkout(self):
+        response = self.client.get(self.url, {'cantidad': '2'})
+
+        self.assertRedirects(response, reverse('carrito:checkout'))
+        compra = self.client.session['compra_directa']
+        self.assertEqual(compra['producto_id'], self.producto.id)
+        self.assertEqual(compra['cantidad'], 2)
+
+
+# ---------------------------------------------------------------------------
+# 7) VISTA: quitar_item
+# ---------------------------------------------------------------------------
+class QuitarItemVistaTests(TestCase):
+
+    def setUp(self):
+        self.cliente = crear_cliente()
+        self.proveedor = crear_proveedor()
+        self.producto = crear_producto(self.proveedor)
+        self.carrito = Carrito.objects.create(cliente=self.cliente)
+        self.item = ItemCarrito.objects.create(
+            carrito=self.carrito, producto=self.producto, cantidad=1
+        )
+        self.client.login(username='cliente1', password='clave123')
+
+    def test_quita_un_item_propio(self):
+        url = reverse('carrito:quitar_item', args=[self.item.id])
+        response = self.client.get(url)
+
+        self.assertRedirects(response, reverse('carrito:ver_carrito'))
+        self.assertFalse(ItemCarrito.objects.filter(id=self.item.id).exists())
+
+    def test_no_puede_quitar_item_de_otro_cliente(self):
+        otro_cliente = crear_cliente(username='otro_cliente')
+        self.client.logout()
+        self.client.login(username='otro_cliente', password='clave123')
+
+        url = reverse('carrito:quitar_item', args=[self.item.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(ItemCarrito.objects.filter(id=self.item.id).exists())
+
+
+# ---------------------------------------------------------------------------
+# 8) VISTA: checkout
+# ---------------------------------------------------------------------------
+class CheckoutVistaTests(TestCase):
+
+    def setUp(self):
+        self.cliente = crear_cliente()
+        self.proveedor = crear_proveedor()
+        self.client.login(username='cliente1', password='clave123')
+        self.url = reverse('carrito:checkout')
+
+    def test_carrito_vacio_redirige_con_mensaje(self):
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('carrito:ver_carrito'))
+
+    def test_con_items_en_el_carrito_calcula_envio_pago(self):
+        producto = crear_producto(self.proveedor, precio=Decimal('20000.00'))
+        carrito = Carrito.objects.create(cliente=self.cliente)
+        ItemCarrito.objects.create(carrito=carrito, producto=producto, cantidad=1)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['subtotal'], Decimal('20000.00'))
+        self.assertFalse(response.context['envio_gratis'])
+        self.assertEqual(response.context['costo_envio'], COSTO_ENVIO)
+        self.assertEqual(response.context['total'], Decimal('20000.00') + COSTO_ENVIO)
+
+    def test_compra_que_supera_el_minimo_tiene_envio_gratis(self):
+        producto = crear_producto(self.proveedor, precio=Decimal(str(MONTO_MINIMO_ENVIO_GRATIS)))
+        carrito = Carrito.objects.create(cliente=self.cliente)
+        ItemCarrito.objects.create(carrito=carrito, producto=producto, cantidad=1)
+
+        response = self.client.get(self.url)
+
+        self.assertTrue(response.context['envio_gratis'])
+        self.assertEqual(response.context['costo_envio'], 0)
+
+    def test_compra_directa_en_sesion_se_usa_en_lugar_del_carrito(self):
+        producto = crear_producto(self.proveedor, precio=Decimal('15000.00'))
+        session = self.client.session
+        session['compra_directa'] = {'producto_id': producto.id, 'cantidad': 3}
+        session.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['compra_directa'])
+        self.assertEqual(response.context['subtotal'], Decimal('45000.00'))
+
+
+# ---------------------------------------------------------------------------
+# 9) VISTA: confirmar_pago (la más completa: valida, revisa stock, descuenta
+#    inventario, crea el Envio y su HistorialEstado dentro de una transacción)
+# ---------------------------------------------------------------------------
+class ConfirmarPagoVistaTests(TestCase):
+
+    def setUp(self):
+        self.cliente = crear_cliente()
+        self.proveedor = crear_proveedor()
+        self.client.login(username='cliente1', password='clave123')
+        self.url = reverse('carrito:confirmar_pago')
+
+    def _armar_carrito(self, cantidad_disponible=20, cantidad_pedida=2, precio=Decimal('20000.00')):
+        producto = crear_producto(self.proveedor, cantidad_disponible=cantidad_disponible, precio=precio)
+        carrito = Carrito.objects.create(cliente=self.cliente)
+        ItemCarrito.objects.create(carrito=carrito, producto=producto, cantidad=cantidad_pedida)
+        return producto
+
+    def test_solo_acepta_metodo_post(self):
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('carrito:checkout'))
+
+    def test_pago_exitoso_crea_envio_y_descuenta_stock(self):
+        producto = self._armar_carrito(cantidad_disponible=20, cantidad_pedida=2)
+
+        response = self.client.post(self.url, DATOS_ENVIO_VALIDOS)
+
+        self.assertRedirects(response, reverse('rastreo:mis_envios'))
+
+        producto.refresh_from_db()
+        self.assertEqual(producto.cantidad_disponible, 18)  # 20 - 2
+
+        envio = Envio.objects.get(cliente=self.cliente)
+        self.assertEqual(envio.cantidad, 2)
+        self.assertEqual(envio.estado_actual, 'preparando')
+        self.assertEqual(envio.historial.count(), 1)
+
+    def test_pago_exitoso_vacia_el_carrito(self):
+        producto = self._armar_carrito()
+        self.client.post(self.url, DATOS_ENVIO_VALIDOS)
+
+        carrito = Carrito.objects.get(cliente=self.cliente)
+        self.assertEqual(carrito.items.count(), 0)
+
+    def test_sin_stock_suficiente_no_crea_envio_ni_descuenta_stock(self):
+        producto = self._armar_carrito(cantidad_disponible=1, cantidad_pedida=5)
+
+        response = self.client.post(self.url, DATOS_ENVIO_VALIDOS)
+
+        self.assertRedirects(response, reverse('carrito:checkout'))
+        producto.refresh_from_db()
+        self.assertEqual(producto.cantidad_disponible, 1)  # sin cambios
+        self.assertFalse(Envio.objects.filter(cliente=self.cliente).exists())
+
+    def test_producto_pausado_no_permite_comprarlo(self):
+        producto = self._armar_carrito()
+        producto.esta_activo = False
+        producto.save()
+
+        response = self.client.post(self.url, DATOS_ENVIO_VALIDOS)
+
+        self.assertRedirects(response, reverse('carrito:checkout'))
+        self.assertFalse(Envio.objects.filter(cliente=self.cliente).exists())
+
+    def test_datos_de_envio_invalidos_no_generan_el_pedido(self):
+        self._armar_carrito()
+        datos_malos = {**DATOS_ENVIO_VALIDOS, 'telefono': '123'}
+
+        response = self.client.post(self.url, datos_malos)
+
+        self.assertRedirects(response, reverse('carrito:checkout'))
+        self.assertFalse(Envio.objects.filter(cliente=self.cliente).exists())
+
+    def test_campos_faltantes_muestran_error_generico(self):
+        self._armar_carrito()
+        datos_incompletos = {**DATOS_ENVIO_VALIDOS}
+        del datos_incompletos['telefono']
+
+        response = self.client.post(self.url, datos_incompletos)
+        self.assertRedirects(response, reverse('carrito:checkout'))
+
+        mensajes = [m.message for m in get_messages(response.wsgi_request)]
+        self.assertTrue(any('completa todos los datos' in m for m in mensajes))
+
+    def test_compra_directa_tambien_genera_envio_correctamente(self):
+        producto = crear_producto(self.proveedor, cantidad_disponible=10, precio=Decimal('10000.00'))
+        session = self.client.session
+        session['compra_directa'] = {'producto_id': producto.id, 'cantidad': 3}
+        session.save()
+
+        response = self.client.post(self.url, DATOS_ENVIO_VALIDOS)
+
+        self.assertRedirects(response, reverse('rastreo:mis_envios'))
+        producto.refresh_from_db()
+        self.assertEqual(producto.cantidad_disponible, 7)
+        # la sesión de compra directa se limpia después de pagar
+        self.assertNotIn('compra_directa', self.client.session)
  
 # Create your tests here.
