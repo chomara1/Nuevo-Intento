@@ -1,0 +1,797 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nebula · Belleza con licencia para las más pequeñas</title>
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.2" y2="16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-10-9.3C.5 8 1.7 4.7 4.9 3.8c2.1-.6 4.2.3 5.4 2 .5.7 1.1 1.7 1.7 1.7s1.2-1 1.7-1.7c1.2-1.7 3.3-2.6 5.4-2 3.2.9 4.4 4.2 2.9 7.4C19.5 15.9 12 20.5 12 20.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-heart-fill" viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-10-9.3C.5 8 1.7 4.7 4.9 3.8c2.1-.6 4.2.3 5.4 2 .5.7 1.1 1.7 1.7 1.7s1.2-1 1.7-1.7c1.2-1.7 3.3-2.6 5.4-2 3.2.9 4.4 4.2 2.9 7.4C19.5 15.9 12 20.5 12 20.5z" fill="currentColor"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20c1.4-3.6 4.4-5.6 7.5-5.6s6.1 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.2l1.1 12.2A2 2 0 0 0 8.3 18h8.9a2 2 0 0 0 2-1.7L20.5 8H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="21" r="1.4" fill="currentColor"/><circle cx="17" cy="21" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1.5 12S5 5.5 12 5.5 22.5 12 22.5 12 19 18.5 12 18.5 1.5 12 1.5 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2z" fill="currentColor"/></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8.5h2.5V5h-2.7C11 5 9.7 6.6 9.7 9v2.2H7.5V15h2.2v6h3.1v-6h2.4l.4-3.8h-2.8V9.3c0-.6.2-.8.9-.8z" fill="currentColor"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="7" r="1.1" fill="currentColor"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 3.5c.5 2 2 3.4 4 3.6v3c-1.5 0-2.9-.4-4-1.2v6.4a5.3 5.3 0 1 1-4.8-5.3v3.1a2.3 2.3 0 1 0 1.8 2.2V3.5H14z" fill="currentColor"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><rect x="4" y="9" width="3" height="10" fill="currentColor"/><circle cx="5.5" cy="5.5" r="1.8" fill="currentColor"/><path d="M11 9h3v1.7c.6-1 1.8-2 3.4-2 2.6 0 3.6 1.7 3.6 4.4V19h-3v-5.4c0-1.3-.4-2.2-1.7-2.2-1 0-1.6.7-1.9 1.3-.1.2-.1.6-.1 1V19h-3z" fill="currentColor"/></symbol>
+    <symbol id="i-pinterest" viewBox="0 0 24 24"><path d="M12 3.5c-4.7 0-8 3.2-8 7.2 0 2.6 1.4 4.4 3 5-.1-.5-.3-1.4 0-2 .2-.6 1.4-6 1.4-6s-.4-.7-.4-1.8c0-1.7 1-2.9 2.2-2.9 1 0 1.6.8 1.6 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.2 1.8 2.2 2.1 0 3.7-2.3 3.7-5.5 0-2.9-2-4.9-5-4.9-3.4 0-5.4 2.6-5.4 5.2 0 1 .4 2.1 .9 2.7.1.1.1.2.1.3l-.3 1.4c0 .2-.1.2-.3.1-1.2-.6-2-2.4-2-3.9 0-3.2 2.3-6.1 6.6-6.1 3.5 0 6.2 2.5 6.2 5.8 0 3.5-2.2 6.3-5.2 6.3-1 0-2-.5-2.3-1.1l-.6 2.4c-.2.9-.8 2-1.3 2.7.9.3 1.9.4 3 .4 4.7 0 8.4-3.8 8.4-8.6S16.7 3.5 12 3.5z" fill="currentColor"/></symbol>
+    <symbol id="i-yt" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 9.5l5 2.5-5 2.5z" fill="currentColor"/></symbol>
+  </svg>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <div class="top-header">
+        <a href="#inicio" class="logo" aria-label="Nebula — ir al inicio">
+          <span class="logo-mark"><svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-sparkle"/></svg></span>
+          <span class="logo-word">nebula</span>
+        </a>
+
+        <form class="search-bar" role="search" id="searchForm">
+          <svg class="search-icon" width="18" height="18"><use href="#i-search"/></svg>
+          <input type="text" id="searchInput" placeholder="¿Qué estás buscando?" aria-label="Buscar productos" autocomplete="off">
+          <button type="button" class="search-clear" id="searchClear" aria-label="Borrar búsqueda" hidden>
+            <svg width="14" height="14"><use href="#i-close"/></svg>
+          </button>
+        </form>
+
+        <div class="user-actions">
+          <button class="icon-btn" id="favToggleBtn" aria-label="Ver favoritos" aria-pressed="false">
+            <svg width="21" height="21"><use href="#i-heart"/></svg>
+            <span class="icon-count" id="favCount" hidden>0</span>
+          </button>
+
+          <a href="/carrito/" class="icon-btn" id="cartBtn" aria-label="Ver carrito">
+            <svg width="21" height="21"><use href="#i-cart"/></svg>
+            <span class="icon-count" id="cartCount" hidden>0</span>
+          </a>
+
+          <a href="/registro/" class="icon-btn" aria-label="Mi cuenta">
+            <svg width="21" height="21"><use href="#i-user"/></svg>
+          </a>
+
+          <button class="icon-btn mobile-toggle" id="mobileToggle" aria-label="Abrir menú" aria-expanded="false">
+            <svg width="22" height="22"><use href="#i-menu"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <nav class="bottom-header" id="bottomHeader">
+        <div class="categories-container">
+          <button class="categories-btn" id="categoriesBtn" aria-expanded="false" aria-controls="dropdownMenu">
+            <svg width="18" height="18"><use href="#i-menu"/></svg>
+            <span>Categorías</span>
+          </button>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <label><input type="checkbox" value="capilar" class="cat-check"> Capilar</label>
+            <label><input type="checkbox" value="facial" class="cat-check"> Facial</label>
+            <label><input type="checkbox" value="maquillaje" class="cat-check"> Maquillaje</label>
+            <button class="cat-reset" id="catReset" type="button">Limpiar filtros</button>
+          </div>
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#inicio" data-nav="inicio" class="active-link">Inicio</a></li>
+          <li><a href="#grid" data-nav="capilar">Capilar</a></li>
+          <li><a href="#grid" data-nav="tiendas">Tiendas</a></li>
+          <li><a href="#grid" data-nav="nueva">Nueva Colección</a></li>
+          <li><a href="/rastreo/mis-envios/">Mis pedidos</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section id="inicio" class="hero" aria-roledescription="carrusel" aria-label="Destacados">
+    <button class="hero-arrow hero-arrow-left" id="heroPrev" aria-label="Diapositiva anterior">
+      <svg width="20" height="20"><use href="#i-chev-l"/></svg>
+    </button>
+    <div class="hero-track" id="heroTrack">
+      <article class="hero-slide" style="--slide-a:#6C3B8C; --slide-b:#2D1B4E;">
+        <p class="hero-eyebrow">Colección con licencia</p>
+        <h1>El clóset de belleza que sí quieren tener</h1>
+        <p class="hero-copy">Cosmetiqueras, accesorios y maquillaje de tus personajes favoritos, pensados para manos pequeñas.</p>
+        <a href="#grid" class="hero-cta">Ver catálogo</a>
+      </article>
+      <article class="hero-slide" style="--slide-a:#8E44AD; --slide-b:#4A1F6A;">
+        <p class="hero-eyebrow">Ofertas de temporada</p>
+        <h1>Hasta 20% menos en set seleccionados</h1>
+        <p class="hero-copy">Aprovecha antes de que se agoten las referencias más buscadas del mes.</p>
+        <a href="#grid" class="hero-cta">Ver ofertas</a>
+      </article>
+      <article class="hero-slide" style="--slide-a:#9B59B6; --slide-b:#2D1B4E;">
+        <p class="hero-eyebrow">Recién llegado</p>
+        <h1>Nueva colección Toy Story ya está aquí</h1>
+        <p class="hero-copy">Sombras, brillos y accesorios de cabello para armar looks llenos de imaginación.</p>
+        <a href="#grid" class="hero-cta">Descubrir</a>
+      </article>
+    </div>
+    <button class="hero-arrow hero-arrow-right" id="heroNext" aria-label="Siguiente diapositiva">
+      <svg width="20" height="20"><use href="#i-chev-r"/></svg>
+    </button>
+    <div class="hero-dots" id="heroDots" role="tablist" aria-label="Seleccionar diapositiva"></div>
+  </section>
+
+
+  <section class="toolbar" aria-label="Filtros activos">
+    <p class="toolbar-count"><strong id="resultCount">{{ productos|length|add:24 }}</strong> productos</p>
+    <div class="active-pills" id="activePills"></div>
+  </section>
+
+  <section class="product-grid" id="grid">
+
+
+    <article class="product-card" data-category="maquillaje" data-new="true" data-store="true"
+      data-title="Cosmetiquera Barbie Dreams" data-ref="MTT2480" data-price="25000"
+      data-desc="Cosmetiquera compacta con cierre resistente, ideal para guardar los accesorios de maquillaje favoritos.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/7B2D8E/FFFFFF?text=Barbie+Dreams" alt="Cosmetiquera Barbie Dreams" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Cosmetiquera Barbie Dreams</h2>
+        <span class="product-ref">Ref MTT2480</span>
+        <div class="product-footer">
+          <span class="product-price">$ 25.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="true" data-store="true"
+      data-title="Shampoo Reparador" data-ref="DYT2513" data-price="15000"
+      data-desc="Shampoo reparador con aroma a vainilla y extracto de miel, ideal para cabello seco y dañado.">
+      <div class="product-media">
+        <img src="{% static 'img/shampooreparador.jpeg' %}" alt="Shampoo Reparador" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Shampoo Reparador</h2>
+        <span class="product-ref">Ref DYT2513</span>
+        <div class="product-footer">
+          <span class="product-price">$ 15.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="true" data-store="true"
+      data-title="Paleta Sombra Toy Story" data-ref="DYT2528" data-price="40000"
+      data-desc="Paleta de sombras con tonos pigmentados para crear looks divertidos.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/9B59B6/FFFFFF?text=Toy+Story+Sombra" alt="Paleta Sombra Toy Story" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Paleta Sombra Toy Story</h2>
+        <span class="product-ref">Ref DYT2528</span>
+        <div class="product-footer">
+          <span class="product-price">$ 40.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="true" data-store="true"
+      data-title="Malteada Bronceadora Body Shine" data-ref="DYT2675" data-price="15000"
+      data-desc="Loción corporal con brillo suave y aroma dulce, presentación tipo malteada. Tono 01.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/A569BD/FFFFFF?text=Body+Shine" alt="Malteada Bronceadora" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Malteada Bronceadora Body Shine</h2>
+        <span class="product-ref">Ref DYT2675</span>
+        <span class="product-detail">Tono 01</span>
+        <div class="product-footer">
+          <span class="product-price">$ 15.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="false" data-store="true"
+      data-title="Set Moños y Ligas Frozen" data-ref="CAP101" data-price="12000"
+      data-desc="Set de 12 ligas y 6 moños con motivos de Frozen.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/7D3C98/FFFFFF?text=Frozen+Moños" alt="Set Moños Frozen" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Set Moños y Ligas Frozen</h2>
+        <span class="product-ref">Ref CAP101</span>
+        <div class="product-footer">
+          <span class="product-price">$ 12.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="false" data-store="false"
+      data-title="Labial Brillante Minnie" data-ref="MAQ204" data-price="18000"
+      data-desc="Labial con brillo y sabor a fresa, empaque de Minnie.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/6C3483/FFFFFF?text=Minnie+Labial" alt="Labial Minnie" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Labial Brillante Minnie</h2>
+        <span class="product-ref">Ref MAQ204</span>
+        <div class="product-footer">
+          <span class="product-price">$ 18.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="false" data-store="false"
+      data-title="Gel de Aloe Vera con Unicornio" data-ref="FAC312" data-price="22000"
+      data-desc="Gel refrescante de aloe vera con aroma a unicornio.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/8E44AD/FFFFFF?text=Aloe+Unicornio" alt="Gel Aloe Unicornio" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Gel de Aloe Vera con Unicornio</h2>
+        <span class="product-ref">Ref FAC312</span>
+        <div class="product-footer">
+          <span class="product-price">$ 22.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="true" data-store="false"
+      data-title="Peine Mágico con Purpurina" data-ref="CAP205" data-price="9000"
+      data-desc="Peine con purpurina y brillos, ideal para desenredar.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/7D3C98/FFFFFF?text=Peine+Purpurina" alt="Peine Mágico" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Peine Mágico con Purpurina</h2>
+        <span class="product-ref">Ref CAP205</span>
+        <div class="product-footer">
+          <span class="product-price">$ 9.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="true" data-store="false"
+      data-title="Set de Sombras Dinosaurio" data-ref="MAQ309" data-price="35000"
+      data-desc="Set de 6 sombras con tonos tierra y verde, empaque de dinosaurio.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/A569BD/FFFFFF?text=Dino+Sombra" alt="Set Dinosaurio" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Set de Sombras Dinosaurio</h2>
+        <span class="product-ref">Ref MAQ309</span>
+        <div class="product-footer">
+          <span class="product-price">$ 35.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="true" data-store="false"
+      data-title="Crema Hidratante Sirena" data-ref="FAC401" data-price="28000"
+      data-desc="Crema hidratante con perlas de colores y aroma a caramelo.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/8E44AD/FFFFFF?text=Sirena+Crema" alt="Crema Sirena" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Crema Hidratante Sirena</h2>
+        <span class="product-ref">Ref FAC401</span>
+        <div class="product-footer">
+          <span class="product-price">$ 28.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="false" data-store="false"
+      data-title="Gorro de Baño con Orejas" data-ref="CAP115" data-price="14000"
+      data-desc="Gorro de baño con orejas de conejo, ajustable.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/6C3483/FFFFFF?text=Gorro+Orejas" alt="Gorro Orejas" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Gorro de Baño con Orejas</h2>
+        <span class="product-ref">Ref CAP115</span>
+        <div class="product-footer">
+          <span class="product-price">$ 14.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="true" data-store="false"
+      data-title="Pintura Facial Arcoíris" data-ref="MAQ521" data-price="21000"
+      data-desc="Set de 8 colores para pintura facial, lavable y seguro.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/9B59B6/FFFFFF?text=Pintura+Arcoíris" alt="Pintura Arcoíris" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Pintura Facial Arcoíris</h2>
+        <span class="product-ref">Ref MAQ521</span>
+        <div class="product-footer">
+          <span class="product-price">$ 21.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="false" data-store="false"
+      data-title="Exfoliante de Azúcar con Oso" data-ref="FAC228" data-price="19000"
+      data-desc="Exfoliante suave con aroma a miel y ositos de goma.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/7D3C98/FFFFFF?text=Exfoliante+Oso" alt="Exfoliante Oso" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Exfoliante de Azúcar con Oso</h2>
+        <span class="product-ref">Ref FAC228</span>
+        <div class="product-footer">
+          <span class="product-price">$ 19.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="false" data-store="false"
+      data-title="Cepillo Desenredante Princesa" data-ref="CAP302" data-price="16000"
+      data-desc="Cepillo con cerdas suaves y diseño de princesa.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/A569BD/FFFFFF?text=Cepillo+Princesa" alt="Cepillo Princesa" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Cepillo Desenredante Princesa</h2>
+        <span class="product-ref">Ref CAP302</span>
+        <div class="product-footer">
+          <span class="product-price">$ 16.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="true" data-store="true"
+      data-title="Set de Uñas con Purpurina" data-ref="MAQ410" data-price="27000"
+      data-desc="Set de 10 uñas postizas con purpurina y pegamento.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/8E44AD/FFFFFF?text=Uñas+Purpurina" alt="Set Uñas" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Set de Uñas con Purpurina</h2>
+        <span class="product-ref">Ref MAQ410</span>
+        <div class="product-footer">
+          <span class="product-price">$ 27.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="true" data-store="true"
+      data-title="Mascarilla de Frutas Divertida" data-ref="FAC503" data-price="13000"
+      data-desc="Mascarilla facial con aroma a frutas, presentación divertida.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/6C3483/FFFFFF?text=Mascarilla+Frutas" alt="Mascarilla Frutas" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Mascarilla de Frutas Divertida</h2>
+        <span class="product-ref">Ref FAC503</span>
+        <div class="product-footer">
+          <span class="product-price">$ 13.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="false" data-store="false"
+      data-title="Diadema con Lazo Gigante" data-ref="CAP119" data-price="8000"
+      data-desc="Diadema acolchada con lazo grande de tela.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/7D3C98/FFFFFF?text=Diadema+Lazo" alt="Diadema Lazo" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Diadema con Lazo Gigante</h2>
+        <span class="product-ref">Ref CAP119</span>
+        <div class="product-footer">
+          <span class="product-price">$ 8.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="false" data-store="false"
+      data-title="Gloss de Labios con Sabor" data-ref="MAQ618" data-price="14000"
+      data-desc="Gloss brillante con sabor a fresa y empaque de corazón.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/9B59B6/FFFFFF?text=Gloss+Labios" alt="Gloss Labios" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Gloss de Labios con Sabor</h2>
+        <span class="product-ref">Ref MAQ618</span>
+        <div class="product-footer">
+          <span class="product-price">$ 14.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="false" data-store="false"
+      data-title="Toallitas Húmedas con Olor a Algodón" data-ref="FAC701" data-price="11000"
+      data-desc="Toallitas húmedas suaves para el rostro, con aroma a algodón.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/A569BD/FFFFFF?text=Toallitas+Algodón" alt="Toallitas" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Toallitas Húmedas con Olor a Algodón</h2>
+        <span class="product-ref">Ref FAC701</span>
+        <div class="product-footer">
+          <span class="product-price">$ 11.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="true" data-store="false"
+      data-title="Trenza Postiza con Brillo" data-ref="CAP222" data-price="32000"
+      data-desc="Trenza postiza con hilos brillantes, fácil de colocar.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/6C3483/FFFFFF?text=Trenza+Brillo" alt="Trenza Postiza" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Trenza Postiza con Brillo</h2>
+        <span class="product-ref">Ref CAP222</span>
+        <div class="product-footer">
+          <span class="product-price">$ 32.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="false" data-store="false"
+      data-title="Pestañas Postizas con Purpurina" data-ref="MAQ733" data-price="19000"
+      data-desc="Pestañas postizas con purpurina, incluye pegamento.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/8E44AD/FFFFFF?text=Pestañas+Purpurina" alt="Pestañas" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Pestañas Postizas con Purpurina</h2>
+        <span class="product-ref">Ref MAQ733</span>
+        <div class="product-footer">
+          <span class="product-price">$ 19.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="facial" data-new="true" data-store="false"
+      data-title="Bálsamo Labial con Sabor a Sandía" data-ref="FAC812" data-price="9000"
+      data-desc="Bálsamo labial hidratante con sabor a sandía, empaque divertido.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/7D3C98/FFFFFF?text=Bálsamo+Sandía" alt="Bálsamo Sandía" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Facial</span>
+        <h2 class="product-title">Bálsamo Labial con Sabor a Sandía</h2>
+        <span class="product-ref">Ref FAC812</span>
+        <div class="product-footer">
+          <span class="product-price">$ 9.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="capilar" data-new="false" data-store="false"
+      data-title="Pack de Ligas con Pompones" data-ref="CAP901" data-price="7000"
+      data-desc="Pack de 20 ligas con pompones de colores.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/9B59B6/FFFFFF?text=Ligas+Pompones" alt="Ligas Pompones" loading="lazy">
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Capilar</span>
+        <h2 class="product-title">Pack de Ligas con Pompones</h2>
+        <span class="product-ref">Ref CAP901</span>
+        <div class="product-footer">
+          <span class="product-price">$ 7.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="product-card" data-category="maquillaje" data-new="true" data-store="true"
+      data-title="Set de Brochas con Estuche" data-ref="MAQ555" data-price="45000"
+      data-desc="Set de 5 brochas profesionales con estuche de unicornio.">
+      <div class="product-media">
+        <img src="https://via.placeholder.com/300x300/A569BD/FFFFFF?text=Brochas+Unicornio" alt="Set Brochas" loading="lazy">
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">Maquillaje</span>
+        <h2 class="product-title">Set de Brochas con Estuche</h2>
+        <span class="product-ref">Ref MAQ555</span>
+        <div class="product-footer">
+          <span class="product-price">$ 45.000</span>
+          <button class="btn-add">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+
+    {% for producto in productos %}
+    <article class="product-card"
+      data-category="{% if producto.categoria %}{{ producto.categoria.nombre|lower }}{% else %}otros{% endif %}"
+      data-new="true" data-store="true"
+      data-title="{{ producto.nombre }}" data-ref="{{ producto.id }}" data-price="{{ producto.precio }}"
+      data-desc="{{ producto.descripcion }}">
+      <div class="product-media">
+        {% if producto.imagen %}
+          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
+        {% else %}
+          <img src="https://via.placeholder.com/300x300/7B2D8E/FFFFFF?text={{ producto.nombre|urlencode }}" alt="{{ producto.nombre }}" loading="lazy">
+        {% endif %}
+        <span class="badge-new">Nuevo</span>
+        <div class="card-actions">
+          <button class="pill-btn btn-view" aria-label="Ver detalles"><svg width="17" height="17"><use href="#i-eye"/></svg></button>
+          <button class="pill-btn btn-fav" aria-label="Añadir a favoritos" aria-pressed="false"><svg width="17" height="17"><use href="#i-heart"/></svg></button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">{% if producto.categoria %}{{ producto.categoria.nombre }}{% else %}Sin categoría{% endif %}</span>
+        <h2 class="product-title">{{ producto.nombre }}</h2>
+        <span class="product-ref">{{ producto.marca|default:"" }}</span>
+        <div class="product-footer">
+          <span class="product-price">$ {{ producto.precio }} COP</span>
+          <a href="/carrito/agregar/{{ producto.id }}/" class="btn-add">Agregar</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+
+  </section>
+
+  <p class="empty-state" id="emptyState" hidden>No encontramos productos con esos filtros. Prueba quitando alguno.</p>
+
+  <footer class="site-footer" id="footer">
+    <div class="footer-inner">
+      <div class="payment-methods">
+        <span class="pay-chip">Nequi</span>
+        <span class="pay-chip">Visa</span>
+        <span class="pay-chip">Mastercard</span>
+        <span class="pay-chip">PSE</span>
+        <span class="pay-chip">Mercado Pago</span>
+      </div>
+
+      <hr class="footer-divider" />
+
+      <div class="footer-columns">
+        <div class="footer-col brand-col">
+          <span class="logo footer-logo">
+            <span class="logo-mark"><svg viewBox="0 0 24 24" width="20" height="20"><use href="#i-sparkle"/></svg></span>
+            <span class="logo-word">nebula</span>
+          </span>
+          <div class="social-icons">
+            <a href="#" class="social-link" aria-label="Facebook"><svg width="17" height="17"><use href="#i-fb"/></svg></a>
+            <a href="#" class="social-link" aria-label="TikTok"><svg width="17" height="17"><use href="#i-tiktok"/></svg></a>
+            <a href="#" class="social-link" aria-label="Instagram"><svg width="17" height="17"><use href="#i-ig"/></svg></a>
+            <a href="#" class="social-link" aria-label="LinkedIn"><svg width="17" height="17"><use href="#i-linkedin"/></svg></a>
+            <a href="#" class="social-link" aria-label="Pinterest"><svg width="17" height="17"><use href="#i-pinterest"/></svg></a>
+            <a href="#" class="social-link" aria-label="YouTube"><svg width="17" height="17"><use href="#i-yt"/></svg></a>
+          </div>
+          <p class="sic-note">Vigilado por la Superintendencia de Industria y Comercio</p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Información</h3>
+          <ul>
+            <li><a href="#">Términos y condiciones</a></li>
+            <li><a href="#">Políticas de privacidad</a></li>
+            <li><a href="#">Manual de atención para PQRs</a></li>
+            <li><a href="#">Políticas mayoristas</a></li>
+            <li><a href="#">Línea Ética</a></li>
+            <li><a href="#">Actividades legales y promociones</a></li>
+            <li><a href="#">Políticas Tiendas Físicas</a></li>
+            <li><a href="#">Términos Calendario 2026</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Enlaces de interés</h3>
+          <ul>
+            <li><a href="#">Quiénes somos</a></li>
+            <li><a href="#">Nuestras tiendas</a></li>
+            <li><a href="#">Trabaja con nosotros</a></li>
+            <li><a href="#">Preguntas frecuentes</a></li>
+            <li><a href="#">Contáctanos</a></li>
+            <li><a href="#">Ejecutivas comerciales</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col contact-col">
+          <h3>Atención al cliente</h3>
+          <p class="schedule">
+            <strong>Horario:</strong><br />
+            Lunes a viernes de 7:30 a.m. a 5:00 p.m.<br />
+            Sábados de 8:00 a.m. a 12:30 p.m.<br />
+            No tenemos atención los días festivos
+          </p>
+          <p class="nit">NIT. 901.374.981-3</p>
+          <p class="write-us">
+            <strong>Escríbenos</strong><br />
+            <a href="mailto:servicioalcliente@trendyshop.com.co" class="email-link">servicioalcliente@trendyshop.com.co</a>
+          </p>
+          <p class="whatsapp">
+            Línea WhatsApp<br />
+            <strong>+57 316 3440010</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Colombia &copy; Nebula 2026. Derechos reservados. Desarrollado por Titamedia | Plataforma Vtex</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="quickview-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">
+        <svg width="18" height="18"><use href="#i-close"/></svg>
+      </button>
+      <div class="modal-media" id="modalMedia"></div>
+      <div class="modal-info">
+        <span class="product-category" id="modalCategory"></span>
+        <h2 id="modalTitle"></h2>
+        <span class="product-ref" id="modalRef"></span>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-footer">
+          <span class="product-price" id="modalPrice"></span>
+          <button class="btn-add" id="modalAdd">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="{% static 'script.js' %}"></script>
+</body>
+</html>

@@ -1,38 +1,30 @@
 (function() {
       'use strict';
 
-      // ---------- DOM refs ----------
       const products = document.querySelectorAll('.product-card');
       const grid = document.getElementById('grid');
       const emptyState = document.getElementById('emptyState');
       const resultCount = document.getElementById('resultCount');
       const activePills = document.getElementById('activePills');
 
-      // Search
       const searchInput = document.getElementById('searchInput');
       const searchClear = document.getElementById('searchClear');
 
-      // Category checkboxes
       const catChecks = document.querySelectorAll('.cat-check');
       const catReset = document.getElementById('catReset');
 
-      // Nav links
       const navLinks = document.querySelectorAll('.nav-links a');
 
-      // Dropdown
       const categoriesBtn = document.getElementById('categoriesBtn');
       const dropdownMenu = document.getElementById('dropdownMenu');
 
-      // Mobile toggle
       const mobileToggle = document.getElementById('mobileToggle');
       const navList = document.getElementById('navLinks');
 
-      // Favoritos y carrito (contadores)
       const favCount = document.getElementById('favCount');
       const cartCount = document.getElementById('cartCount');
       const favToggleBtn = document.getElementById('favToggleBtn');
 
-      // Modal
       const modalOverlay = document.getElementById('modalOverlay');
       const modalClose = document.getElementById('modalClose');
       const modalMedia = document.getElementById('modalMedia');
@@ -45,10 +37,8 @@
       const modalComprarAhora = document.getElementById('modalComprarAhora');
       const modalQtySelector = document.getElementById('modalQtySelector');
 
-      // Toast
       const toastContainer = document.getElementById('toastContainer');
 
-      // ---------- Persistencia de favoritos ----------
       const FAVORITOS_KEY = 'nebula_favoritos';
 
       function cargarFavoritos() {
@@ -66,22 +56,19 @@
         try {
           localStorage.setItem(FAVORITOS_KEY, JSON.stringify(Array.from(favorites)));
         } catch (e) {
-          // localStorage no disponible (modo incógnito, etc.) - no rompe nada más
         }
       }
 
-      // ---------- Estado ----------
       let activeFilters = {
         search: '',
-        categories: [], // array de 'capilar', 'facial', 'maquillaje'
-        nav: 'inicio', // 'inicio' | 'capilar' | 'tiendas' | 'nueva'
+        categories: [],
+        nav: 'inicio',
         favoritesOnly: false
       };
 
-      let favorites = cargarFavoritos(); // ahora persiste entre páginas y recargas
-      let cart = []; // almacena objetos { ref, title, price }
+      let favorites = cargarFavoritos();
+      let cart = [];
 
-      // ---------- Funciones auxiliares ----------
       function getProductData(card) {
         return {
           category: card.dataset.category,
@@ -110,7 +97,6 @@
         }, 2800);
       }
 
-      // ---------- Renderizado / filtrado ----------
       function filterProducts() {
         const search = activeFilters.search.toLowerCase().trim();
         const cats = activeFilters.categories;
@@ -124,19 +110,16 @@
           const ref = data.ref.toLowerCase();
           const desc = (data.desc || '').toLowerCase();
 
-          // Buscador
           let matchSearch = true;
           if (search) {
             matchSearch = title.includes(search) || ref.includes(search) || desc.includes(search);
           }
 
-          // Categorías (si hay alguna seleccionada)
           let matchCat = true;
           if (cats.length > 0) {
             matchCat = cats.includes(data.category);
           }
 
-          // Nav
           let matchNav = true;
           if (nav === 'capilar') {
             matchNav = data.category === 'capilar';
@@ -144,9 +127,8 @@
             matchNav = data.store === true;
           } else if (nav === 'nueva') {
             matchNav = data.new === true;
-          } // 'inicio' -> todos
+          }
 
-          // Solo favoritos (activado desde el corazón del header)
           let matchFav = true;
           if (activeFilters.favoritesOnly) {
             matchFav = favorites.has(data.ref);
@@ -157,23 +139,18 @@
           if (show) visible++;
         });
 
-        // Actualizar contador (protegido: en esta página no existe #resultCount)
         if (resultCount) resultCount.textContent = visible;
         if (emptyState) emptyState.hidden = visible > 0;
 
-        // Actualizar pills
         renderPills();
 
-        // Marcar enlace activo
         navLinks.forEach(link => {
           const navVal = link.dataset.nav;
           link.classList.toggle('active-link', navVal === nav);
         });
       }
 
-      // ---------- Pills (filtros activos) ----------
       function renderPills() {
-        // Protegido: en esta página no existe #activePills
         if (!activePills) return;
 
         const pills = [];
@@ -207,7 +184,6 @@
         });
         activePills.innerHTML = html;
 
-        // Event listeners para eliminar pills
         activePills.querySelectorAll('.remove-pill').forEach(el => {
           el.addEventListener('click', function() {
             const type = this.dataset.type;
@@ -222,7 +198,6 @@
               const idx = activeFilters.categories.indexOf(value);
               if (idx > -1) activeFilters.categories.splice(idx, 1);
             } else if (type === 'nav') {
-              // resetear nav a 'inicio'
               activeFilters.nav = 'inicio';
             } else if (type === 'favorites') {
               activeFilters.favoritesOnly = false;
@@ -234,7 +209,6 @@
         });
       }
 
-      // ---------- Eventos de búsqueda ----------
       if (searchInput) {
         searchInput.addEventListener('input', function() {
           const val = this.value;
@@ -254,7 +228,6 @@
         });
       }
 
-      // ---------- Eventos de categorías (checkboxes) ----------
       catChecks.forEach(check => {
         check.addEventListener('change', function() {
           const val = this.value;
@@ -278,21 +251,14 @@
         });
       }
 
-      // ---------- Eventos de navegación (nav) ----------
       navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
           const navVal = this.dataset.nav;
-          // Links como "Mis pedidos" no tienen data-nav: son navegación real,
-          // no un filtro, así que los dejamos funcionar normal (sin preventDefault).
           if (!navVal) return;
 
-          // Si esta página no tiene el grid de productos (ej. mis pedidos, carrito,
-          // seguimiento), no hay nada que filtrar/scrollear aquí: dejamos que el link
-          // navegue normal hacia tienda_home#inicio o tienda_home#grid.
           if (!grid) return;
 
           e.preventDefault();
-          // Si es 'inicio' o 'tiendas' o 'nueva' o 'capilar'
           if (navVal === 'inicio') {
             activeFilters.nav = 'inicio';
           } else if (navVal === 'capilar') {
@@ -304,18 +270,15 @@
           } else {
             activeFilters.nav = 'inicio';
           }
-          // Cerrar menú móvil si está abierto
           if (navList.classList.contains('open')) {
             navList.classList.remove('open');
             mobileToggle.setAttribute('aria-expanded', 'false');
           }
           filterProducts();
-          // Scroll al grid (opcional)
           grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       });
 
-      // ---------- Dropdown categorías ----------
       if (categoriesBtn) {
         categoriesBtn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -332,7 +295,6 @@
         }
       });
 
-      // ---------- Mobile toggle ----------
       if (mobileToggle) {
         mobileToggle.addEventListener('click', function() {
           const expanded = this.getAttribute('aria-expanded') === 'true';
@@ -341,7 +303,6 @@
         });
       }
 
-      // ---------- Favoritos ----------
       document.querySelectorAll('.btn-fav').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -367,14 +328,10 @@
           guardarFavoritos();
           favCount.textContent = favorites.size;
           favCount.hidden = favorites.size === 0;
-          // Si estamos viendo "solo favoritos", refrescar para que desaparezca
-          // al instante si se acaba de desmarcar
           if (activeFilters.favoritesOnly) filterProducts();
         });
       });
 
-      // Marcar en rojo los corazones de los productos que ya eran favoritos
-      // (por ejemplo, al volver de otra página gracias a localStorage)
       function sincronizarIconosFavoritos() {
         document.querySelectorAll('.btn-fav').forEach(btn => {
           const card = btn.closest('.product-card');
@@ -389,7 +346,6 @@
       }
       sincronizarIconosFavoritos();
 
-      // Corazón del header: alterna entre "ver todo" y "ver solo mis favoritos"
       if (favToggleBtn) {
         favToggleBtn.addEventListener('click', function() {
           activeFilters.favoritesOnly = !activeFilters.favoritesOnly;
@@ -404,8 +360,6 @@
         });
       }
 
-      // Si llegamos con ?ver=favoritos en la URL (por ejemplo, desde el botón
-      // "Mis favoritos" del perfil), activamos el filtro automáticamente.
       const parametrosUrl = new URLSearchParams(window.location.search);
       if (parametrosUrl.get('ver') === 'favoritos' && favToggleBtn) {
         activeFilters.favoritesOnly = true;
@@ -415,9 +369,6 @@
         if (iconUse) iconUse.setAttribute('href', '#i-heart-fill');
       }
 
-      // ---------- Carrito ----------
-      // Carrito "falso" solo para botones que no tienen la clase btn-add-real
-      // (compatibilidad hacia atrás; en esta página todos los "Agregar" ya usan btn-add-real)
       document.querySelectorAll('.btn-add:not(.btn-add-real)').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -439,9 +390,6 @@
         });
       });
 
-      // Botón real de "Agregar": usa fetch, no recarga la página.
-      // Funciona tanto en la tarjeta pequeña (sin selector de cantidad -> 1 unidad)
-      // como en el modal / tarjeta grande (con su propio selector de cantidad).
       document.querySelectorAll('.btn-add-real').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -464,6 +412,8 @@
                 if (this.id === 'modalAddReal') {
                   modalOverlay.hidden = true;
                 }
+              } else if (data.mensaje) {
+                showToast(data.mensaje);
               }
             })
             .catch(() => {
@@ -472,8 +422,6 @@
         });
       });
 
-      // Botón "Comprar ahora" (vive dentro del modal / tarjeta grande):
-      // manda la cantidad elegida y va directo al checkout, sin pasar por el carrito
       document.querySelectorAll('.btn-comprar-ahora').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -489,7 +437,6 @@
         });
       });
 
-      // Selector de cantidad (+/-): aplica al selector del modal (la tarjeta pequeña ya no tiene uno)
       document.querySelectorAll('.qty-selector').forEach(sel => {
         const minusBtn = sel.querySelector('.qty-minus');
         const plusBtn = sel.querySelector('.qty-plus');
@@ -499,9 +446,10 @@
           return parseInt(sel.dataset.qty, 10) || 1;
         }
         function setQty(n) {
-          if (n < 1) n = 1;
+          n = parseInt(n, 10);
+          if (isNaN(n) || n < 1) n = 1;
           sel.dataset.qty = n;
-          valueEl.textContent = n;
+          valueEl.value = n;
         }
 
         minusBtn.addEventListener('click', function(e) {
@@ -512,9 +460,24 @@
           e.stopPropagation();
           setQty(getQty() + 1);
         });
+
+        valueEl.addEventListener('input', function(e) {
+          e.stopPropagation();
+          const n = parseInt(this.value, 10);
+          if (!isNaN(n) && n >= 1) {
+            sel.dataset.qty = n;
+          }
+        });
+
+        valueEl.addEventListener('blur', function() {
+          setQty(this.value);
+        });
+
+        valueEl.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
       });
 
-      // ---------- Vista rápida (modal / tarjeta grande) ----------
       document.querySelectorAll('.btn-view').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -524,7 +487,6 @@
           const imgSrc = card.querySelector('.product-media img')?.src || '';
           const marca = card.querySelector('.product-ref')?.textContent || '';
 
-          // Llenar modal
           modalMedia.innerHTML = `<img src="${imgSrc}" alt="${data.title}" loading="lazy">`;
           modalCategory.textContent = data.category.charAt(0).toUpperCase() + data.category.slice(1);
           modalTitle.textContent = data.title;
@@ -532,14 +494,12 @@
           modalDesc.textContent = data.desc || 'Sin descripción';
           modalPrice.textContent = formatPrice(data.price);
 
-          // URLs reales del producto para Agregar / Comprar ahora dentro del modal
           modalAddReal.dataset.url = data.agregarUrl || '';
           modalComprarAhora.dataset.baseUrl = data.comprarUrl || '';
           modalComprarAhora.setAttribute('href', data.comprarUrl || '#');
 
-          // Reiniciar la cantidad a 1 cada vez que se abre el modal
           modalQtySelector.dataset.qty = 1;
-          modalQtySelector.querySelector('.qty-value').textContent = 1;
+          modalQtySelector.querySelector('.qty-value').value = 1;
 
           modalOverlay.hidden = false;
         });
@@ -557,7 +517,6 @@
         });
       }
 
-      // ---------- Hero carrusel (protegido: solo corre si existe el hero en esta página) ----------
       const heroTrack = document.getElementById('heroTrack');
       if (heroTrack) {
         const heroDots = document.getElementById('heroDots');
@@ -565,7 +524,6 @@
         let currentSlide = 0;
         let totalSlides = slides.length;
 
-        // Crear dots
         slides.forEach((_, i) => {
           const dot = document.createElement('button');
           dot.setAttribute('role', 'tab');
@@ -588,7 +546,6 @@
         document.getElementById('heroPrev').addEventListener('click', () => goToSlide(currentSlide - 1));
         document.getElementById('heroNext').addEventListener('click', () => goToSlide(currentSlide + 1));
 
-        // Auto-play (opcional)
         let heroInterval = setInterval(() => goToSlide(currentSlide + 1), 5000);
         document.querySelector('.hero').addEventListener('mouseenter', () => clearInterval(heroInterval));
         document.querySelector('.hero').addEventListener('mouseleave', () => {
@@ -596,14 +553,10 @@
         });
       }
 
-      // ---------- Inicializar ----------
-      // Protegido: filterProducts recorre "products", que en páginas sin grid
-      // simplemente estará vacío (no rompe nada), pero lo saltamos igual por claridad.
       if (grid) {
         filterProducts();
       }
 
-      // Contadores iniciales
       if (cartCount) cartCount.hidden = true;
       if (favCount) {
         favCount.textContent = favorites.size;

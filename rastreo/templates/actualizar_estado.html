@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar estado</title>
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-500: #9b59b6;
+            --purple-400: #b38cd9;
+            --purple-300: #c9a8e0;
+            --purple-200: #e0d0f0;
+            --purple-100: #f3ebf9;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--purple-50);
+            margin: 0;
+        }
+
+        .header-rastreo {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .contenedor-form {
+            max-width: 500px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+        }
+
+        .tarjeta-form {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 26px;
+        }
+
+        .tarjeta-form p {
+            color: var(--purple-800);
+            margin: 4px 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            color: var(--purple-900);
+            font-weight: 600;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--purple-200);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--purple-900);
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--purple-500);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: var(--gradient-hero);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .error {
+            background: #fdecea;
+            color: #b3261e;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-rastreo">
+        <h2>✏️ Actualizar estado</h2>
+    </div>
+
+    <div class="contenedor-form">
+        <div class="tarjeta-form">
+            <p><strong>Envío:</strong> #{{ envio.numero_guia }}</p>
+            <p><strong>Cliente:</strong> {{ envio.cliente }}</p>
+            <p><strong>Producto:</strong> {{ envio.producto }}</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <label for="estado">Nuevo estado</label>
+                <select name="estado" id="estado">
+                    {% for valor, texto in envio.ESTADOS %}
+                        <option value="{{ valor }}" {% if valor == envio.estado_actual %}selected{% endif %}>{{ texto }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="comentario">Comentario (opcional)</label>
+                <input type="text" name="comentario" id="comentario" placeholder="Ej: Salió del centro de distribución">
+
+                <button type="submit">Actualizar estado</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
