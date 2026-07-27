@@ -1,5 +1,4 @@
-from django.test import TestCase
-"""
+ """
 Pruebas unitarias de la app 'inventario'.
 
 Qué cubre este archivo:
@@ -84,7 +83,7 @@ class ProductoModelTests(TestCase):
 
         # fecha_creacion tiene auto_now_add=True, así que no se puede pasar
         # por el constructor ni por producto.save(). Para simular que el
-        # producto se creó hace tiempo, se actualizo la fecha directamente
+        # producto se creó hace tiempo, actualizamos la fecha directamente
         # en la base de datos con .update(), que sí ignora auto_now_add.
         fecha_vieja = timezone.now() - timedelta(hours=Producto.HORAS_LIMITE_NUEVO + 1)
         Producto.objects.filter(pk=producto.pk).update(fecha_creacion=fecha_vieja)
@@ -92,7 +91,17 @@ class ProductoModelTests(TestCase):
 
         self.assertFalse(producto.es_nuevo)
 
-    
+    def test_producto_justo_en_el_limite_ya_no_es_nuevo(self):
+        producto = crear_producto(self.proveedor)
+        fecha_limite = timezone.now() - timedelta(hours=Producto.HORAS_LIMITE_NUEVO)
+        Producto.objects.filter(pk=producto.pk).update(fecha_creacion=fecha_limite)
+        producto.refresh_from_db()
+        self.assertFalse(producto.es_nuevo)
+
+    def test_str_devuelve_el_nombre(self):
+        producto = crear_producto(self.proveedor, nombre='Crema Capilar')
+        self.assertEqual(str(producto), 'Crema Capilar')
+
 
 # ---------------------------------------------------------------------------
 # 3) FORM: ProductoForm.clean_cantidad_disponible
@@ -321,6 +330,3 @@ class CambiarEstadoProductoVistaTests(TestCase):
         self.client.get(self.url)
         self.producto.refresh_from_db()
         self.assertTrue(self.producto.esta_activo)
-# Create your tests here.
-
-# Create your tests here.
