@@ -22,7 +22,7 @@ def _cantidad_valida(valor_crudo):
     return cantidad
 
 
-#Patrones de validación para los datos de envío
+# --- Patrones de validación para los datos de envío ---
 PATRON_NOMBRE = re.compile(r'^[A-Za-zÀ-ÿ\s]{3,60}$')
 PATRON_TELEFONO = re.compile(r'^3[0-9]{9}$')
 PATRON_CORREO = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -74,13 +74,42 @@ def agregar_al_carrito(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     carrito, _ = Carrito.objects.get_or_create(cliente=request.user)
 
-    cantidad = _cantidad_valida(request.GET.get('cantidad', 1))
+    cantidad_pedida = _cantidad_valida(request.GET.get('cantidad', 1))
 
     item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, producto=producto)
-    if creado:
-        item.cantidad = cantidad
-    else:
-        item.cantidad += cantidad
+    cantidad_actual_en_carrito = 0 if creado else item.cantidad
+    cantidad_total_deseada = cantidad_actual_en_carrito + cantidad_pedida
+
+    # ============================================================
+    # No dejamos agregar más unidades de las que realmente hay
+    # disponibles en el inventario del proveedor.
+    # ============================================================
+    if not producto.esta_activo:
+        if creado:
+            item.delete()  # no dejamos un ItemCarrito con cantidad 0 huérfano
+        mensaje = f'{producto.nombre} ya no está disponible.'
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'mensaje': mensaje}, status=400)
+        messages.error(request, mensaje)
+        return redirect(request.META.get('HTTP_REFERER', 'usuarios:tienda_home'))
+
+    if cantidad_total_deseada > producto.cantidad_disponible:
+        if creado:
+            item.delete()
+        disponibles = producto.cantidad_disponible
+        if disponibles <= 0:
+            mensaje = f'No quedan unidades disponibles de {producto.nombre}.'
+        else:
+            mensaje = (
+                f'Solo quedan {disponibles} unidad(es) de {producto.nombre} '
+                f'(ya tienes {cantidad_actual_en_carrito} en el carrito).'
+            )
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'mensaje': mensaje}, status=400)
+        messages.error(request, mensaje)
+        return redirect(request.META.get('HTTP_REFERER', 'usuarios:tienda_home'))
+
+    item.cantidad = cantidad_total_deseada
     item.save()
 
     total_items = carrito.items.count()
@@ -102,6 +131,14 @@ def comprar_ahora(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
     cantidad = _cantidad_valida(request.GET.get('cantidad', 1))
+
+    if not producto.esta_activo or cantidad > producto.cantidad_disponible:
+        disponibles = producto.cantidad_disponible
+        if not producto.esta_activo or disponibles <= 0:
+            messages.error(request, f'{producto.nombre} ya no está disponible.')
+        else:
+            messages.error(request, f'Solo quedan {disponibles} unidad(es) de {producto.nombre}.')
+        return redirect(request.META.get('HTTP_REFERER', 'usuarios:tienda_home'))
 
     request.session['compra_directa'] = {
         'producto_id': producto.id,
@@ -197,12 +234,19 @@ def confirmar_pago(request):
     Envio = apps.get_model('rastreo', 'Envio')
     HistorialEstado = apps.get_model('rastreo', 'HistorialEstado')
 
-    # Validamos stock y descontamos inventario de forma segura-select_for_update() bloquea las filas de Producto involucradas mientras dura la transacción para que si dos personas compran el mismo producto al mismo tiempo no se descuente stock de más ni se venda algo que ya no hay
+    # ============================================================
+    # Validamos stock y descontamos inventario de forma segura.
+    # select_for_update() bloquea las filas de Producto involucradas
+    # mientras dura la transacción, para que si dos personas compran
+    # el mismo producto al mismo tiempo no se descuente stock de más
+    # ni se venda algo que ya no hay.
+    # ============================================================
     with transaction.atomic():
         productos_y_cantidades = []
         errores_stock = []
 
         for item in items:
+            # item puede ser un dict (compra directa) o un ItemCarrito (carrito normal)
             producto_id_item = item['producto'].id if isinstance(item, dict) else item.producto_id
             cantidad_item = item['cantidad'] if isinstance(item, dict) else item.cantidad
 
@@ -225,6 +269,7 @@ def confirmar_pago(request):
 
         envios_creados = []
         for producto_bloqueado, cantidad_item in productos_y_cantidades:
+            # Descontamos el stock del proveedor
             producto_bloqueado.cantidad_disponible -= cantidad_item
             producto_bloqueado.save(update_fields=['cantidad_disponible'])
 
