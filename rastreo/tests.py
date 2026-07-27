@@ -8,8 +8,7 @@ Qué cubre este archivo:
 4) ActualizarEstadoVistaTests-> vista actualizar_estado (solo el proveedor
                                  dueño del producto puede actualizar el envío).
 
-Cómo correr solo este archivo una vez copiado a rastreo/tests.py:
-    python manage.py test rastreo
+ 
 """
 
 from decimal import Decimal
