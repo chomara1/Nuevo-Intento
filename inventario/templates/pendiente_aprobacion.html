@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta pendiente de aprobación - Nebula</title>
+    <style>
+        :root {
+            --purple-900: #2d1b4e;
+            --purple-800: #4a1f6a;
+            --purple-700: #6c3b8c;
+            --purple-600: #8e44ad;
+            --purple-200: #e0d0f0;
+            --purple-100: #f3ebf9;
+            --purple-50: #faf5ff;
+            --gradient-hero: linear-gradient(135deg, #4a1f6a, #8e44ad);
+            --shadow: 0 8px 24px rgba(75, 30, 110, 0.15);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--purple-50);
+            color: var(--purple-900);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tarjeta-pendiente {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 48px 40px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .icono-reloj {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .tarjeta-pendiente h2 {
+            color: var(--purple-800);
+            margin: 0 0 12px;
+            font-size: 1.4rem;
+        }
+
+        .tarjeta-pendiente p {
+            color: var(--purple-700);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0 0 24px;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--gradient-hero);
+            color: white;
+            text-decoration: none;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="tarjeta-pendiente">
+    <div class="icono-reloj">⏳</div>
+    <h2>Tu cuenta de proveedor está pendiente de aprobación</h2>
+    <p>
+        Un administrador todavía no ha revisado tu solicitud. En cuanto sea aprobada,
+        vas a poder acceder a tu panel de inventario y empezar a publicar productos.
+    </p>
+    <a href="{% url 'usuarios:tienda_home' %}" class="btn-volver">← Volver a la tienda</a>
+</div>
+
+</body>
+</html>

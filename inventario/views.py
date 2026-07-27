@@ -7,16 +7,15 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from .models import Producto
 from .forms import ProductoForm
+from .decorators import proveedor_aprobado_requerido
 
 
 @login_required
+@proveedor_aprobado_requerido
 def dashboard_proveedor(request):
-    if request.user.perfil.rol != 'PROVEEDOR':
-        return redirect('login')
-
     Envio = apps.get_model('rastreo', 'Envio')
     mis_productos = Producto.objects.filter(proveedor=request.user)
-    
+
     productos_stock_bajo = mis_productos.filter(esta_activo=True, cantidad_disponible__lt=5)
 
     ventas_proveedor = Envio.objects.filter(
@@ -58,11 +57,10 @@ def dashboard_proveedor(request):
         'productos_stock_bajo': productos_stock_bajo,
     })
 
-@login_required
-def agregar_producto(request):
-    if request.user.perfil.rol != 'PROVEEDOR':
-        return redirect('login')
 
+@login_required
+@proveedor_aprobado_requerido
+def agregar_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
@@ -78,6 +76,7 @@ def agregar_producto(request):
 
 
 @login_required
+@proveedor_aprobado_requerido
 def editar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
 
@@ -94,6 +93,7 @@ def editar_producto(request, producto_id):
 
 
 @login_required
+@proveedor_aprobado_requerido
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
     nombre = producto.nombre
@@ -103,6 +103,7 @@ def eliminar_producto(request, producto_id):
 
 
 @login_required
+@proveedor_aprobado_requerido
 def cambiar_estado_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id, proveedor=request.user)
     producto.esta_activo = not producto.esta_activo
